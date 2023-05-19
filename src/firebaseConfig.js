@@ -1,12 +1,12 @@
 // put the firebase configuration here
 const firebaseConfig = {
-  apiKey: 'AIzaSyCUhTYUitTd05ZqFlukaVA7kKoFTtNROLY',
-  authDomain: 'capstone-trackori.firebaseapp.com',
-  projectId: 'capstone-trackori',
-  storageBucket: 'capstone-trackori.appspot.com',
-  messagingSenderId: '206386763149',
-  appId: '1:206386763149:web:57cbc974de3033a95499c4',
-  measurementId: 'G-CTGJ19TGEK',
+  apiKey: 'AIzaSyD4X8CHBSF58F9hSdvIxvcxC8CmuX3O2Ck',
+  authDomain: 'projectdicodingasik.firebaseapp.com',
+  projectId: 'projectdicodingasik',
+  storageBucket: 'projectdicodingasik.appspot.com',
+  messagingSenderId: '994742142014',
+  appId: '1:994742142014:web:7d8ff492ce299591fdbd6f',
+  measurementId: 'G-LQ7EJTS3LG',
 };
 
 module.exports = firebaseConfig;
