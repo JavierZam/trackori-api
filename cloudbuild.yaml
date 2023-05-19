@@ -5,17 +5,17 @@ steps:
     args:
       - '-c'
       - |
-        echo "const firebaseConfig = {" > /workspace/path/to/firebaseConfig.js
-        echo "apiKey: \"$(gcloud secrets versions access latest --secret="firebase-api-key")\"," >> /workspace/path/to/firebaseConfig.js
-        echo "authDomain: \"$(gcloud secrets versions access latest --secret="firebase-auth-domain")\"," >> /workspace/path/to/firebaseConfig.js
-        echo "projectId: \"$(gcloud secrets versions access latest --secret="firebase-project-id")\"," >> /workspace/path/to/firebaseConfig.js
-        echo "storageBucket: \"$(gcloud secrets versions access latest --secret="firebase-storage-bucket")\"," >> /workspace/path/to/firebaseConfig.js
-        echo "messagingSenderId: \"$(gcloud secrets versions access latest --secret="firebase-messaging-sender-id")\"," >> /workspace/path/to/firebaseConfig.js
-        echo "appId: \"$(gcloud secrets versions access latest --secret="firebase-app-id")\"," >> /workspace/path/to/firebaseConfig.js
-        echo "measurementId: \"$(gcloud secrets versions access latest --secret="firebase-measurement-id")\"," >> /workspace/path/to/firebaseConfig.js
-        echo "};" >> /workspace/path/to/firebaseConfig.js
-        echo "" >> /workspace/path/to/firebaseConfig.js
-        echo "module.exports = firebaseConfig;" >> /workspace/path/to/firebaseConfig.js
+        echo "const firebaseConfig = {" > src/firebaseConfig.js
+        echo "apiKey: \"$(gcloud secrets versions access latest --secret="firebase-api-key")\"," >> src/firebaseConfig.js
+        echo "authDomain: \"$(gcloud secrets versions access latest --secret="firebase-auth-domain")\"," >> src/firebaseConfig.js
+        echo "projectId: \"$(gcloud secrets versions access latest --secret="firebase-project-id")\"," >> src/firebaseConfig.js
+        echo "storageBucket: \"$(gcloud secrets versions access latest --secret="firebase-storage-bucket")\"," >> src/firebaseConfig.js
+        echo "messagingSenderId: \"$(gcloud secrets versions access latest --secret="firebase-messaging-sender-id")\"," >> src/firebaseConfig.js
+        echo "appId: \"$(gcloud secrets versions access latest --secret="firebase-app-id")\"," >> src/firebaseConfig.js
+        echo "measurementId: \"$(gcloud secrets versions access latest --secret="firebase-measurement-id")\"," >> src/firebaseConfig.js
+        echo "};" >> src/firebaseConfig.js
+        echo "" >> src/firebaseConfig.js
+        echo "module.exports = firebaseConfig;" >> src/firebaseConfig.js
 
   # Step 2: build the docker image
   - name: 'gcr.io/cloud-builders/docker'
