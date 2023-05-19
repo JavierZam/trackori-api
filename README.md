@@ -82,6 +82,8 @@
 
 - Path : `/user{uid}`
 - Method : `GET`
+- Parameters :
+  - User Id as `string`
 - Response :
 
 ```json
@@ -90,7 +92,10 @@
     "message": "Success fetching user data",
     "data": {
         "uid": "E6xujuerAYSBucr.............",
-        "email": "example@email.comm"
+        "email": "example@email.com",
+        "username": "example",
+        "weight": "60",
+        "height": "165"
     }
 }
 ```
