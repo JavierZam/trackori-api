@@ -1,12 +1,12 @@
 // put the firebase configuration here
 const firebaseConfig = {
-  apiKey: 'AIzaSyD4X8CHBSF58F9hSdvIxvcxC8CmuX3O2Ck',
-  authDomain: 'projectdicodingasik.firebaseapp.com',
-  projectId: 'projectdicodingasik',
-  storageBucket: 'projectdicodingasik.appspot.com',
-  messagingSenderId: '994742142014',
-  appId: '1:994742142014:web:7d8ff492ce299591fdbd6f',
-  measurementId: 'G-LQ7EJTS3LG',
+  apiKey: 'your-api-key',
+  authDomain: 'your-auth-domain',
+  projectId: 'your-project-id',
+  storageBucket: 'your-storage-bucket',
+  messagingSenderId: 'your-messaging-sender-id',
+  appId: 'your-app-id',
+  measurementId: 'your-measurement-id',
 };
 
 module.exports = firebaseConfig;
