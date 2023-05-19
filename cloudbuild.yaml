@@ -6,13 +6,13 @@ steps:
       - '-c'
       - |
         echo "const firebaseConfig = {" > src/firebaseConfig.js
-        echo "apiKey: \"$(gcloud secrets versions access latest --secret="firebase-api-key")\"," >> src/firebaseConfig.js
-        echo "authDomain: \"$(gcloud secrets versions access latest --secret="firebase-auth-domain")\"," >> src/firebaseConfig.js
-        echo "projectId: \"$(gcloud secrets versions access latest --secret="firebase-project-id")\"," >> src/firebaseConfig.js
-        echo "storageBucket: \"$(gcloud secrets versions access latest --secret="firebase-storage-bucket")\"," >> src/firebaseConfig.js
-        echo "messagingSenderId: \"$(gcloud secrets versions access latest --secret="firebase-messaging-sender-id")\"," >> src/firebaseConfig.js
-        echo "appId: \"$(gcloud secrets versions access latest --secret="firebase-app-id")\"," >> src/firebaseConfig.js
-        echo "measurementId: \"$(gcloud secrets versions access latest --secret="firebase-measurement-id")\"," >> src/firebaseConfig.js
+        echo "apiKey: \"$(gcloud secrets versions access latest --secret='firebase-api-key')\"," >> src/firebaseConfig.js
+        echo "authDomain: \"$(gcloud secrets versions access latest --secret='firebase-auth-domain')\"," >> src/firebaseConfig.js
+        echo "projectId: \"$(gcloud secrets versions access latest --secret='firebase-project-id')\"," >> src/firebaseConfig.js
+        echo "storageBucket: \"$(gcloud secrets versions access latest --secret='firebase-storage-bucket')\"," >> src/firebaseConfig.js
+        echo "messagingSenderId: \"$(gcloud secrets versions access latest --secret='firebase-messaging-sender-id')\"," >> src/firebaseConfig.js
+        echo "appId: \"$(gcloud secrets versions access latest --secret='firebase-app-id')\"," >> src/firebaseConfig.js
+        echo "measurementId: \"$(gcloud secrets versions access latest --secret='firebase-measurement-id')\"," >> src/firebaseConfig.js
         echo "};" >> src/firebaseConfig.js
         echo "" >> src/firebaseConfig.js
         echo "module.exports = firebaseConfig;" >> src/firebaseConfig.js
