@@ -190,7 +190,7 @@ const resetPasswordHandler = async (request, h) => {
     console.log({ success: false, message: 'Error sending password reset email:', error });
 
     if (error.code === 'auth/user-not-found') {
-      // Handle email already in use eror
+      // Handle email already in use error
       return h.response({ success: false, message: 'User not found' }).code(404);
     } else {
       throw error;

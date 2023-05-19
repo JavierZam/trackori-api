@@ -1,4 +1,4 @@
-// put the firebase configuration right here
+// put the firebase configuration here
 const firebaseConfig = {
   apiKey: 'your-api-key',
   authDomain: 'your-auth-domain',
