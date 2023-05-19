@@ -13,8 +13,13 @@ const routes = [
                 payload: Joi.object({
                     email: Joi.string().email().required(),
                     password: Joi.string().min(8).required().messages({
-                        'string.min': 'Your password should have a minimum length of 8 characters',
+                        'string.min': 'Password must be at least 8 characters long',
                     }),
+                    username: Joi.string().alphanum().min(3).max(20).required().messages({
+                        'string.min': 'Username must be between 3 and 20 characters',
+                    }),
+                    weight: Joi.number().integer().required(),
+                    height: Joi.number().integer().required()
                 }),
                 failAction: (request, h, err) => {
                     throw err;
@@ -74,9 +79,16 @@ const routes = [
             validate: {
                 payload: Joi.object({
                     email: Joi.string().email().optional(),
-                    password: Joi.string().min(8).optional(),
+                    password: Joi.string().min(8).optional().messages({
+                        'string.min': 'Password must be at least 8 characters long',
+                    }),
+                    username: Joi.string().alphanum().min(3).max(20).optional().messages({
+                        'string.min': 'Username must be between 3 and 20 characters',
+                    }),
+                    height: Joi.number().integer().optional(),
+                    weight: Joi.number().integer().optional(),
                     currentEmail: Joi.string().email().required(),
-                    currentPassword: Joi.string().min(8).required(),
+                    currentPassword: Joi.string().min(6).required(),
                 }),
                 params: Joi.object({
                     uid: Joi.string().required(),
@@ -84,6 +96,7 @@ const routes = [
             }
         }
     },
+    
     //Reset User Password 
     {
         method: 'POST',
