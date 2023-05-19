@@ -1,12 +1,12 @@
 // put the firebase configuration here
 const firebaseConfig = {
-    apiKey: "your-api-key",
-    authDomain: "your-auth-domain",
-    projectId: "your-project-id",
-    storageBucket: "your-storage-bucket",
-    messagingSenderId: "your-messaging-sender-id",
-    appId: "your-app-id",
-    measurementId: "your-measurement-id"
+  apiKey: 'AIzaSyCUhTYUitTd05ZqFlukaVA7kKoFTtNROLY',
+  authDomain: 'capstone-trackori.firebaseapp.com',
+  projectId: 'capstone-trackori',
+  storageBucket: 'capstone-trackori.appspot.com',
+  messagingSenderId: '206386763149',
+  appId: '1:206386763149:web:57cbc974de3033a95499c4',
+  measurementId: 'G-CTGJ19TGEK',
 };
 
 module.exports = firebaseConfig;
