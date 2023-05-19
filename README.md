@@ -2,7 +2,7 @@
 
 ## Endpoint
 
-- base url : `TBA`
+- base url : https://trackori-authentication-api-ymrdyfncwq-et.a.run.app/
 
 ### Register User
 
