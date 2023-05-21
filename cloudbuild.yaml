@@ -16,6 +16,18 @@ steps:
         echo "};" >> src/firebaseConfig.js
         echo "" >> src/firebaseConfig.js
         echo "module.exports = firebaseConfig;" >> src/firebaseConfig.js
+    secretEnv: ['FIREBASE_API_KEY', 'FIREBASE_AUTH_DOMAIN', 'FIREBASE_PROJECT_ID', 'FIREBASE_STORAGE_BUCKET', 'FIREBASE_MESSAGING_SENDER_ID', 'FIREBASE_APP_ID', 'FIREBASE_MEASUREMENT_ID']
+
+secrets:
+- kmsKeyName: projects/$PROJECT_ID/locations/global/keyRings/my-key-ring/cryptoKeys/my-key
+  secretEnv:
+    FIREBASE_API_KEY: 'firebase-api-key'
+    FIREBASE_AUTH_DOMAIN: 'firebase-auth-domain'
+    FIREBASE_PROJECT_ID: 'firebase-project-id'
+    FIREBASE_STORAGE_BUCKET: 'firebase-storage-bucket'
+    FIREBASE_MESSAGING_SENDER_ID: 'firebase-messaging-sender-id'
+    FIREBASE_APP_ID: 'firebase-app-id'
+    FIREBASE_MEASUREMENT_ID: 'firebase-measurement-id'
 
   # Step 2: build the docker image
   - name: 'gcr.io/cloud-builders/docker'
