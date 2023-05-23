@@ -14,6 +14,7 @@ steps:
         echo "appId: \"$(gcloud secrets versions access latest --secret='firebase-app-id')\"," >> src/firebaseConfig.js
         echo "measurementId: \"$(gcloud secrets versions access latest --secret='firebase-measurement-id')\"," >> src/firebaseConfig.js
         echo "};" >> src/firebaseConfig.js
+        echo "" >> src/firebaseConfig.js
         echo "export default firebaseConfig;" >> src/firebaseConfig.js
 
   # Step 2: build the docker image
