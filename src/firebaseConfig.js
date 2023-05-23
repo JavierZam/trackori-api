@@ -1,12 +1,12 @@
-// put the firebase configuration here
+// put the firebase configuration heree
 const firebaseConfig = {
-    apiKey: "your-api-key",
-    authDomain: "your-auth-domain",
-    projectId: "your-project-id",
-    storageBucket: "your-storage-bucket",
-    messagingSenderId: "your-messaging-sender-id",
-    appId: "your-app-id",
-    measurementId: "your-measurement-id"
-};
-
-module.exports = firebaseConfig;
+    apiKey: ' ',
+    authDomain: ' ',
+    projectId: ' ',
+    storageBucket: ' ',
+    messagingSenderId: ' ',
+    appId: ' ',
+    measurementId: ' ',
+  };
+  
+  module.exports = firebaseConfig;
