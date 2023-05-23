@@ -14,7 +14,7 @@ if (!admin.apps.length) {
         credential: admin.credential.applicationDefault()
     });
 }
-
+// ini komentar
 const app = getApp();
 const auth = getAuth(app);
 const db = getFirestore(app);
