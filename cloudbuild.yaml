@@ -15,7 +15,7 @@ steps:
         echo "measurementId: \"$(gcloud secrets versions access latest --secret='firebase-measurement-id')\"," >> src/firebaseConfig.js
         echo "};" >> src/firebaseConfig.js
         echo "" >> src/firebaseConfig.js
-        echo "export default firebaseConfig;" >> src/firebaseConfig.js
+        echo "module.exports = firebaseConfig;" >> src/firebaseConfig.js
 
   # Step 2: build the docker image
   - name: 'gcr.io/cloud-builders/docker'
