@@ -1,5 +1,5 @@
 const Joi = require('joi');
-const { registerHandler, loginHandler, verifyTokenHandler, logoutHandler, getUserByIdHandler, editUserDataHandler, resetPasswordHandler } = require('./handler')
+const { registerHandler, loginHandler, verifyTokenHandler, logoutHandler, getUserByIdHandler, editUserDataHandler, editUserInfoHandler, resetPasswordHandler, addCalorieHistoryHandler, getCalorieHistoryByDateHandler, getAllCalorieHistoryHandler, editCalorieHistoryHandler } = require('./handler')
 
 const routes = [
 
@@ -18,8 +18,11 @@ const routes = [
                     username: Joi.string().alphanum().min(3).max(20).required().messages({
                         'string.min': 'Username must be between 3 and 20 characters',
                     }),
-                    weight: Joi.number().integer().required(),
-                    height: Joi.number().integer().required()
+                    gender: Joi.string().valid('male', 'female').required(),
+                    age: Joi.number().integer().min(1).required(),
+                    weight: Joi.number().positive().required(),
+                    height: Joi.number().positive().required(),
+                    plan: Joi.string().trim().allow('', null).valid('defisit', 'bulking').optional()
                 }),
                 failAction: (request, h, err) => {
                     throw err;
@@ -51,7 +54,7 @@ const routes = [
         options: {
             pre: [{ method: verifyTokenHandler }],
             handler: (request, h) => {
-                return { success: true, message: 'This is protected resources'};
+                return { success: true, message: 'This is protected resources' };
             }
         }
     },
@@ -70,10 +73,10 @@ const routes = [
         handler: getUserByIdHandler,
     },
 
-    //Edit User Info
+    //Edit User Data
     {
         method: 'PUT',
-        path: '/edit-profile/{uid}',
+        path: '/edit-credential/{uid}',
         handler: editUserDataHandler,
         options: {
             validate: {
@@ -82,21 +85,45 @@ const routes = [
                     password: Joi.string().min(8).optional().messages({
                         'string.min': 'Password must be at least 8 characters long',
                     }),
-                    username: Joi.string().alphanum().min(3).max(20).optional().messages({
-                        'string.min': 'Username must be between 3 and 20 characters',
-                    }),
-                    height: Joi.number().integer().optional(),
-                    weight: Joi.number().integer().optional(),
                     currentEmail: Joi.string().email().required(),
-                    currentPassword: Joi.string().min(6).required(),
+                    currentPassword: Joi.string().min(8).required()
                 }),
                 params: Joi.object({
                     uid: Joi.string().required(),
-                })
+                }),
+                failAction: (request, h, err) => {
+                    throw err;
+                }
             }
         }
     },
-    
+
+    {
+        method: 'PUT',
+        path: '/edit-info/{uid}',
+        handler: editUserInfoHandler,
+        options: {
+            validate: {
+                payload: Joi.object({
+                    username: Joi.string().alphanum().min(3).max(20).optional().messages({
+                        'string.min': 'Username must be between 3 and 20 characters',
+                    }),
+                    age: Joi.number().integer().min(1).optional(),
+                    height: Joi.number().positive().optional(),
+                    weight: Joi.number().positive().optional(),
+                    dailyCalorieNeeds: Joi.number().positive().optional(),
+                    plan: Joi.string().trim().allow('', null).valid('defisit', 'bulking').optional(),
+                }),
+                params: Joi.object({
+                    uid: Joi.string().required(),
+                }),
+                failAction: (request, h, err) => {
+                    throw err;
+                }
+            }
+        }
+    },
+
     //Reset User Password 
     {
         method: 'POST',
@@ -110,6 +137,51 @@ const routes = [
             }
         }
     },
+
+    {
+        method: 'POST',
+        path: "/users/{uid}/calorie-history",
+        handler: addCalorieHistoryHandler,
+        options: {
+            validate: {
+                payload: Joi.object({
+                    calories: Joi.number().positive().required()
+                })
+            }
+        }
+    },
+
+    {
+        method: 'GET',
+        path: '/users/{uid}/calorie-history',
+        handler: getCalorieHistoryByDateHandler,
+        options: {
+            validate: {
+                query: Joi.object({
+                    date: Joi.date().iso().required()
+                })
+            }
+        }
+    },
+
+    {
+        method: 'GET',
+        path: '/users/{uid}/all-calorie-history',
+        handler: getAllCalorieHistoryHandler
+    },
+
+    {
+        method: 'PUT',
+        path: '/users/{uid}/calorie-history/{docId}',
+        handler: editCalorieHistoryHandler,
+        options: {
+            validate: {
+                payload: Joi.object({
+                    calories: Joi.number().positive().required()
+                })
+            }
+        }
+    }
 ];
 
 module.exports = routes;

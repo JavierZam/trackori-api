@@ -8,5 +8,5 @@ const firebaseConfig = {
     appId: ' ',
     measurementId: ' ',
   };
-  
+
   module.exports = firebaseConfig;
