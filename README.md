@@ -103,7 +103,7 @@
 ```json
 {
   "success": true,
-  "message": "Succesfully fetching calories data by date",
+  "message": "Succesfully fetching all calorie history data",
   "data": [
       {
           "id": "ruFG4GsQtc......",
@@ -130,7 +130,7 @@
 ```json
 {
   "success": true,
-  "message": "Succesfully fetching calories data by date",
+  "message": "Successfully updated calorie history",
   "data": {
           "calories": 300,
           "date": "DD-MM-YYYY"
