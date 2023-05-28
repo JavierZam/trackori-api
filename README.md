@@ -16,7 +16,7 @@
   - age as `number`
   - weight as `number`
   - height as `number`
-  - plan as `string` (optional), defisit, bulking or null 
+  - plan as `string`, defisit, bulking or null 
 - Response :
 
 ```json
@@ -148,7 +148,7 @@
   - weight as `number` (optional)
   - height as `number` (optional)
   - dailyCalorieNeeds as `number` (optional)
-  - plan as `string` (optional), defisit, bulking or null
+  - plan as `string`, defisit, bulking or null 
 - Response :
 
 ```json
