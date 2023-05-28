@@ -16,7 +16,7 @@
   - age as `number`
   - weight as `number`
   - height as `number`
-  - plan as `string`, optional, defisit, bulking or null 
+  - plan as `string` (optional), defisit, bulking or null 
 - Response :
 
 ```json
@@ -143,12 +143,12 @@
 - Path : `/edit-info/{uid}`
 - Method : `PUT`
 - Request Body :
-  - username as `string`, optional
-  - age as `number`, optional
-  - weight as `number`, optional
-  - height as `number`, optional
-  - dailyCalorieNeeds as `number`, optional
-  - plan as `string`, optional, defisit, bulking or null
+  - username as `string` (optional), min 3 characters
+  - age as `number` (optional)
+  - weight as `number` (optional)
+  - height as `number` (optional)
+  - dailyCalorieNeeds as `number` (optional)
+  - plan as `string` (optional), defisit, bulking or null
 - Response :
 
 ```json
@@ -212,10 +212,10 @@
 - Path : `/edit-credential/{uid}`
 - Method : `PUT`
 - Request Body :
-  - email as `string`, optional, new email
-  - password as `string`, optional, new password
-  - currentEmail as `string`, required, old email
-  - currentPassword as `string`, required, old password
+  - email as `string` (optional), new email
+  - password as `string` (optional), new password
+  - currentEmail as `string` (required), old email
+  - currentPassword as `string` (required), old password
 - Response :
 
 ```json
