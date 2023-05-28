@@ -10,10 +10,13 @@
 - Method : `POST`
 - Request Body :
   - email as `string`
-  - password as `string`, must be at least 8 characters long
-  - username as `string`
-  - weight as `integer`
-  - height as `integer`
+  - password as `string`, min 8 characters
+  - username as `string`, min 3 characters
+  - gender as `string`
+  - age as `number`
+  - weight as `number`
+  - height as `number`
+  - plan as `string`, optional
 - Response :
 
 ```json
@@ -50,7 +53,122 @@
 }
 ```
 
-### Protected Resources
+### Create new data in calorie-history
+
+- Path : `/users/{uid}/calorie-history`
+- Method : `POST`
+- Request Body :
+  - calories as `number`
+- Response :
+
+```json
+{
+  "success": true,
+  "message": "Successfully add calorie history data",
+  "data": {
+      "calories": 100,
+      "date": "DD-MM-YYYY"
+    }
+}
+```
+
+### Get calorie-history data by date
+
+- Path : `/users/{uid}/get-calorie-history?date={YYYY-MM-DD}`
+- Method : `GET`
+- Parameters :
+  - date as `YYYY-MM-DD` format
+- Response :
+
+```json
+{
+  "success": true,
+  "message": "Succesfully fetching calories data by date",
+  "data": [
+      {
+          "id": "ruFG4GsQtc......",
+          "calories": 100,
+          "date": "DD-MM-YYYY"
+      }
+   ]
+}
+```
+
+### Get all calorie-history data
+
+- Path : `/users/{uid}/all-calorie-history`
+- Method : `GET`
+- Response :
+
+```json
+{
+  "success": true,
+  "message": "Succesfully fetching calories data by date",
+  "data": [
+      {
+          "id": "ruFG4GsQtc......",
+          "calories": 100,
+          "date": "DD-MM-YYYY"
+      },
+      {
+          "id": "ruFGB4rtc......",
+          "calories": 200,
+          "date": "DD-MM-YYYY"
+      },
+   ]
+}
+```
+
+### Edit calorie-history data
+
+- Path : `/users/{uid}/calorie-history/{docId}`
+- Method : `PUT`
+- Request Body :
+  - calories as `number`
+- Response :
+
+```json
+{
+  "success": true,
+  "message": "Succesfully fetching calories data by date",
+  "data": {
+          "calories": 300,
+          "date": "DD-MM-YYYY"
+      }
+}
+```
+
+### Edit User Information
+
+- Path : `/edit-info/{uid}`
+- Method : `PUT`
+- Request Body :
+  - username as `string`, optional
+  - age as `number`, optional
+  - weight as `number`, optional
+  - height as `number`, optional
+  - dailyCalorieNeeds as `number`, optional
+  - plan as `string`, optional
+- Response :
+
+```json
+{
+    "success": true,
+    "message": "Profile updated successfully",
+    "data": {
+        "uid": "E6xujuerAYSBucr.............",
+        "username": "newUsernameExample",
+        "gender": "male",
+        "age": "21",
+        "weight": "60",
+        "height": "165"
+        "dailyCalorieNeeds": 2000
+        "plan": "defisit", if plan exist
+    }
+}
+```
+
+### Protected Resources, verifying user token
 
 - Path : `/protected`
 - Method : `GET`
@@ -65,25 +183,10 @@
 }
 ```
 
-### User Logout
-
-- Path : `/logout`
-- Method : `POST`
-- Response :
-
-```json
-{
-    "success": true,
-    "message": "Logged out successfully"
-}
-```
-
-### User Info
+### Get user info by uid
 
 - Path : `/user{uid}`
 - Method : `GET`
-- Parameters :
-  - User Id as `string`
 - Response :
 
 ```json
@@ -94,26 +197,25 @@
         "uid": "E6xujuerAYSBucr.............",
         "email": "example@email.com",
         "username": "example",
+        "gender": "male",
+        "age": "21",
         "weight": "60",
         "height": "165"
+        "dailyCalorieNeeds": 2000
+        "plan": "defisit", if plan exist
     }
 }
 ```
 
-### Edit User Info
+### Edit User Credential, email or password
 
-- Path : `/edit-profile/{uid}`
+- Path : `/edit-credential/{uid}`
 - Method : `PUT`
-- Parameters :
-  - User Id as `string`
 - Request Body :
-  - email as `string`, optional
-  - password as `string`, optional
-  - username as `string`, optional
-  - weight as `integer`, optional
-  - height as `integer`, optional
-  - currentEmail as `string`, required
-  - currentPassword as `string`, required
+  - email as `string`, optional, new email
+  - password as `string`, optional, new password
+  - currentEmail as `string`, required, old email
+  - currentPassword as `string`, required, old password
 - Response :
 
 ```json
@@ -122,8 +224,7 @@
     "message": "Profile updated successfully",
     "data": {
         "uid": "E6xujuerAYSBucr.............",
-        "email": "newExample@email.com"
-        "username": "newUsernameExample"
+        "email": "newExample@email.com",
     }
 }
 ```
@@ -133,7 +234,7 @@
 - Path : `/reset-password`
 - Method : `POST`
 - Request Body :
-  - email as `string`, required
+  - email as `string`
 - Response :
 
 ```json
@@ -143,5 +244,18 @@
     "data": {
         "email": "example@email.comm"
     }
+}
+```
+
+### User Logout
+
+- Path : `/logout`
+- Method : `POST`
+- Response :
+
+```json
+{
+    "success": true,
+    "message": "Logged out successfully"
 }
 ```

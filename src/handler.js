@@ -1,9 +1,10 @@
 const { initializeApp, getApps, getApp } = require('firebase/app');
-const { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateEmail, updatePassword, sendPasswordResetEmail, isSignInWithEmailLink } = require('firebase/auth');
+const { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateEmail, updatePassword, sendPasswordResetEmail } = require('firebase/auth');
 const { getFirestore, collection, doc, setDoc, getDoc, updateDoc, query, where, getDocs, Timestamp, deleteField, orderBy } = require('firebase/firestore');
 const Boom = require('@hapi/boom');
 const admin = require('firebase-admin');
 const firebaseConfig = require('./firebaseConfig');
+const { date } = require('joi');
 
 if (!getApps().length) {
     initializeApp(firebaseConfig);
@@ -63,11 +64,11 @@ const registerHandler = async (request, h) => {
         const caloriHistory = collection(db, 'users', user.uid, 'calorie-history');
         const newCalorieDocs = doc(caloriHistory);
         await setDoc(newCalorieDocs, {
-            'Calorie History': 0,
+            calories: 0,
             date: Timestamp.now()
         });
 
-        return h.response({ success: true, message: 'User registered successfully', data: { uid: user.uid, email: user.email, username: username } }).code(201);
+        return h.response({ success: true, message: 'User registered successfully', data: { uid: user.uid, email: user.email, username: username }}).code(201);
     } catch (error) {
         console.error({ success: false, message: 'Something went wrong:', error });
 
@@ -87,6 +88,7 @@ const loginHandler = async (request, h) => {
     try {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
+        // Get token 
         const idToken = await user.getIdToken();
 
         const userDoc = doc(db, 'users', user.uid);
@@ -110,7 +112,7 @@ const loginHandler = async (request, h) => {
     }
 };
 
-// Create document in calorie-history subcollection
+// Create new document in calorie-history subcollection
 const addCalorieHistoryHandler = async (request, h) => {
     const { uid } = request.params;
     const { calories } = request.payload;
@@ -119,17 +121,22 @@ const addCalorieHistoryHandler = async (request, h) => {
         const userDoc = doc(db, 'users', uid);
         const calorieHistoryCollection = collection(userDoc, 'calorie-history');
         const calorieHistoryDoc = doc(calorieHistoryCollection);
+        const dateNow = Timestamp.now();
         await setDoc(calorieHistoryDoc, {
             calories,
-            date: Timestamp.now()
+            date: dateNow
         });
-        return h.response('Calorie history added').code(201);
+        const dateObj = dateNow.toDate();
+        // Format the date to 'DD-MM-YYYY'
+        const formattedDate = `${dateObj.getDate().toString().padStart(2, '0')}-${(dateObj.getMonth() + 1).toString().padStart(2, '0')}-${dateObj.getFullYear()}`;
+        return h.response({ success: true, message:'Successfully add new calorie history data', data: {calories: calories, date: formattedDate}}).code(201);
     } catch (error) {
-        console.error('Error adding calorie history:', error);
-        return h.response('Error adding calorie history').code(500);
+        console.error('Error add calorie history data:', error);
+        return h.response({ success: false, message: 'Error add calorie history data'}).code(500);
     }
 };
 
+// Get data from calorie-history subcollection by date
 const getCalorieHistoryByDateHandler = async (request, h) => {
     const { uid } = request.params;
     const { date } = request.query;
@@ -156,32 +163,35 @@ const getCalorieHistoryByDateHandler = async (request, h) => {
         // const startData = startSnapshot.docs.map(doc => ({ id: doc.id, calories: doc.data().calories, date: doc.data().date.toDate().toISOString() }));
         const startData = startSnapshot.docs.map(doc => {
             const dateObj = doc.data().date.toDate();
+            // Format the date to 'DD-MM-YYYY'
             const formattedDate = `${dateObj.getDate().toString().padStart(2, '0')}-${(dateObj.getMonth() + 1).toString().padStart(2, '0')}-${dateObj.getFullYear()}`;
             return { id: doc.id, calories: doc.data().calories, date: formattedDate };
         });
         const endData = endSnapshot.docs.map(doc => doc.id);
         const data = startData.filter(doc => endData.includes(doc.id));
 
-        return h.response(data).code(200);
+        return h.response({ success: true, message: 'Succesfully fetching calories data by date', data: data}).code(200);
     } catch (error) {
-        console.error('Error fetching data:', error);
-        return h.response('Error fetching data').code(500);
+        console.error('Error fetching calorie-history data:', error);
+        return h.response({ success: false, message: 'Error fetching calorie-history data'}).code(500);
     }
-}
+};
 
+// Get all data from calorie-history subcollection
 const getAllCalorieHistoryHandler = async (request, h) => {
     const { uid } = request.params;
 
     try {
         const userDoc = doc(db, 'users', uid);
         const calorieHistoryCollection = collection(userDoc, 'calorie-history');
+        
+        // Show data from newest by date
         const q = query(calorieHistoryCollection, orderBy('date', 'desc'));
         const querySnapshot = await getDocs(q);
         const data = querySnapshot.docs.map(doc => {
             const docData = doc.data();
             const dateObj = docData.date.toDate();
             const formattedDate = `${dateObj.getDate().toString().padStart(2, '0')}-${(dateObj.getMonth() + 1).toString().padStart(2, '0')}-${dateObj.getFullYear()}`;
-
             return {
                 id: doc.id,
                 date: formattedDate,
@@ -189,13 +199,14 @@ const getAllCalorieHistoryHandler = async (request, h) => {
             };
         });
 
-        return h.response(data).code(200);
+        return h.response({ success:true, message: 'Succesfully fetching all calorie history data', data: data}).code(200);
     } catch (error) {
         console.error('Error getting calorie history:', error);
-        return h.response('Error getting calorie history').code(500);
+        return h.response({ success: false, message: 'Error getting calorie history'}).code(500);
     }
 };
 
+// Edit data in calorie-history subcollection
 const editCalorieHistoryHandler = async (request, h) => {
     const { uid, docId } = request.params;
     const { calories } = request.payload;
@@ -205,14 +216,79 @@ const editCalorieHistoryHandler = async (request, h) => {
         const calorieHistoryDoc = doc(userDoc, 'calorie-history', docId);
         await updateDoc(calorieHistoryDoc, { calories });
 
-        return h.response('Calorie history updated').code(200);
+        const updatedDoc = await getDoc(calorieHistoryDoc);
+        if (!updatedDoc.exists()) {
+            // Handle error: document doesn't exist
+            console.error('Document does not exist:', docId);
+            return h.response({ success:false, message: 'Document does not exist'}).code(404);
+        }
+        const updatedData = updatedDoc.data();
+        const dateObj = updatedData.date.toDate();
+        // Format the date to 'DD-MM-YYYY'
+        const formattedDate = `${dateObj.getDate().toString().padStart(2, '0')}-${(dateObj.getMonth() + 1).toString().padStart(2, '0')}-${dateObj.getFullYear()}`;
+
+        return h.response({ success: true, message: 'Successfully updated calorie history', data: {calories: calories, date: formattedDate}}).code(200);
     } catch (error) {
         console.error('Error updating calorie history:', error);
-        return h.response('Error updating calorie history').code(500);
+        return h.response({ success: false, message: 'Error updating calorie history'}).code(500);
     }
-}
+};
 
-//Verifying User TokenId
+// Edit User Information
+const editUserInfoHandler = async (request, h) => {
+    const { uid } = request.params;
+    const { username, age, weight, height, dailyCalorieNeeds, plan } = request.payload;
+
+    try {
+        // Fetch user data from Firestore
+        const userDoc = doc(db, 'users', uid);
+        const docSnap = await getDoc(userDoc);
+        if (!docSnap.exists()) {
+            return h.response({ success: false, message: 'User not found' }).code(404);
+        }
+
+        let updateInfo = docSnap.data();
+        const gender = updateInfo.gender
+        if (username) updateInfo.username = username;
+        if (age) updateInfo.age = age;
+        if (gender) updateInfo.gender = gender;
+        if (weight) updateInfo.weight = weight;
+        if (height) updateInfo.height = height;
+        if (dailyCalorieNeeds) updateInfo.dailyCalorieNeeds = dailyCalorieNeeds;
+        if (plan !== undefined) updateInfo.plan = plan;
+
+        // delete plan if plan is null
+        if (plan === null) {
+            await updateDoc(userDoc, { plan: deleteField() });
+            delete updateInfo.plan;
+        }
+
+        // if dailyCalorieNeeds is not provided by user
+        if (!dailyCalorieNeeds) {
+            // Calculate BMR (Basal Metabolic Rate) and daily calorie needs
+            let BMR;
+            if (updateInfo.gender === 'male') {
+                BMR = (10 * updateInfo.weight) + (6.25 * updateInfo.height) - (5 * updateInfo.age) + 5;
+            } else {
+                BMR = (10 * updateInfo.weight) + (6.25 * updateInfo.height) - (5 * updateInfo.age) - 161;
+            }
+            // assuming for moderate physical activity
+            let dailyCalorieNeeds = BMR * 1.55;
+            dailyCalorieNeeds = Math.round(dailyCalorieNeeds);
+            updateInfo.dailyCalorieNeeds = dailyCalorieNeeds;
+        }
+
+        // Update user data
+        await updateDoc(userDoc, updateInfo);
+
+        return h.response({ success: true, message: 'Profile updated successfully', data: { uid: uid, username: updateInfo.username, gender: updateInfo.gender, age: updateInfo.age, weight: updateInfo.weight, height: updateInfo.height, dailyCalorieNeeds: updateInfo.dailyCalorieNeeds, plan: updateInfo.plan } }).code(200);
+    } catch (error) {
+        console.error('Error updating profile:', error);
+        return h.response({ success: false, message: 'Error updating user information'})
+    }
+};
+
+//Verifying User Token
 const verifyTokenHandler = async (request, h) => {
     const idToken = request.headers.authorization;
 
@@ -225,19 +301,6 @@ const verifyTokenHandler = async (request, h) => {
         console.error({ success: false, message: 'Error verifying token', error });
         throw Boom.unauthorized('Invalid token');
     }
-};
-
-//User Logout
-const logoutHandler = async (request, h) => {
-
-    try {
-        await signOut(auth);
-        return h.response({ success: true, message: 'Logged out successfully' }).code(200);
-    } catch (error) {
-        console.error('Error logging out user:', error);
-        return h.response({ success: false, message: 'Something went wrong' }).code(400);
-    }
-
 };
 
 //Get User Info By Id
@@ -260,7 +323,7 @@ const getUserByIdHandler = async (request, h) => {
     }
 };
 
-//Edit User email or password
+//Edit user credential, email or password
 const editUserDataHandler = async (request, h) => {
     const { uid } = request.params;
     const { email, password, currentEmail, currentPassword } = request.payload;
@@ -311,61 +374,7 @@ const editUserDataHandler = async (request, h) => {
     }
 };
 
-// Edit User Information
-const editUserInfoHandler = async (request, h) => {
-    const { uid } = request.params;
-    const { username, age, weight, height, dailyCalorieNeeds, plan } = request.payload;
-
-    try {
-
-        // Fetch user data from Firestore
-        const userDoc = doc(db, 'users', uid);
-        const docSnap = await getDoc(userDoc);
-        if (!docSnap.exists()) {
-            return h.response({ success: false, message: 'User not found' }).code(404);
-        }
-
-        let updateInfo = docSnap.data();
-        const gender = updateInfo.gender
-        if (username) updateInfo.username = username;
-        if (age) updateInfo.age = age;
-        if (gender) updateInfo.gender = gender;
-        if (weight) updateInfo.weight = weight;
-        if (height) updateInfo.height = height;
-        if (dailyCalorieNeeds) updateInfo.dailyCalorieNeeds = dailyCalorieNeeds;
-        if (plan !== undefined) updateInfo.plan = plan;
-
-        // delete plan if plan is null
-        if (plan === null || plan.trim() === "") {
-            await updateDoc(userDoc, { plan: deleteField() });
-            delete updateInfo.plan;
-        }
-
-        // if dailyCalorieNeed is not provided by user
-        if (!dailyCalorieNeeds) {
-            // Calculate BMR (Basal Metabolic Rate) and daily calorie needs
-            let BMR;
-            if (updateInfo.gender === 'male') {
-                BMR = (10 * updateInfo.weight) + (6.25 * updateInfo.height) - (5 * updateInfo.age) + 5;
-            } else {
-                BMR = (10 * updateInfo.weight) + (6.25 * updateInfo.height) - (5 * updateInfo.age) - 161;
-            }
-            // assuming for moderate physical activity
-            let dailyCalorieNeeds = BMR * 1.55;
-            dailyCalorieNeeds = Math.round(dailyCalorieNeeds);
-            updateInfo.dailyCalorieNeeds = dailyCalorieNeeds;
-        }
-
-        // Update user data
-        await updateDoc(userDoc, updateInfo);
-
-        return h.response({ success: true, message: 'Profile updated successfully', data: { uid: uid, username: updateInfo.username, gender: updateInfo.gender, age: updateInfo.age, weight: updateInfo.weight, height: updateInfo.height, dailyCalorieNeeds: updateInfo.dailyCalorieNeeds, plan: updateInfo.plan } }).code(200);
-    } catch (error) {
-        console.error('Error updating profile:', error);
-    }
-};
-
-//Reset User Password
+//Reset user password using email 
 const resetPasswordHandler = async (request, h) => {
     const { email } = request.payload;
     try {
@@ -376,25 +385,36 @@ const resetPasswordHandler = async (request, h) => {
         console.log({ success: false, message: 'Error sending password reset email:', error });
 
         if (error.code === 'auth/user-not-found') {
-            // Handle email already in use error
             return h.response({ success: false, message: 'User not found' }).code(404);
         } else {
             throw error;
         }
     }
-}
+};
+
+//User Logout
+const logoutHandler = async (request, h) => {
+
+    try {
+        await signOut(auth);
+        return h.response({ success: true, message: 'Logged out successfully' }).code(200);
+    } catch (error) {
+        console.error('Error logging out user:', error);
+        return h.response({ success: false, message: 'Something went wrong' }).code(400);
+    }
+};
 
 module.exports = {
     registerHandler,
     loginHandler,
-    verifyTokenHandler,
-    logoutHandler,
-    getUserByIdHandler,
-    editUserDataHandler,
-    editUserInfoHandler,
-    resetPasswordHandler,
     addCalorieHistoryHandler,
     getCalorieHistoryByDateHandler,
     getAllCalorieHistoryHandler,
-    editCalorieHistoryHandler
+    editCalorieHistoryHandler,
+    editUserInfoHandler,
+    verifyTokenHandler,
+    getUserByIdHandler,
+    editUserDataHandler,
+    resetPasswordHandler,
+    logoutHandler
 };

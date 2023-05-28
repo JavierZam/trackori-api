@@ -27,8 +27,8 @@ const routes = [
                 failAction: (request, h, err) => {
                     throw err;
                 }
-            },
-        },
+            }
+        }
     },
 
     //User Login
@@ -47,49 +47,15 @@ const routes = [
 
     },
 
-    //Protected Resources
-    {
-        method: 'GET',
-        path: '/protected',
-        options: {
-            pre: [{ method: verifyTokenHandler }],
-            handler: (request, h) => {
-                return { success: true, message: 'This is protected resources' };
-            }
-        }
-    },
-
-    //User Logout
+    // Create new document in calorie-history subcollection
     {
         method: 'POST',
-        path: '/logout',
-        handler: logoutHandler,
-    },
-
-    //Get User Info
-    {
-        method: 'GET',
-        path: '/user/{uid}',
-        handler: getUserByIdHandler,
-    },
-
-    //Edit User Data
-    {
-        method: 'PUT',
-        path: '/edit-credential/{uid}',
-        handler: editUserDataHandler,
+        path: "/users/{uid}/calorie-history",
+        handler: addCalorieHistoryHandler,
         options: {
             validate: {
                 payload: Joi.object({
-                    email: Joi.string().email().optional(),
-                    password: Joi.string().min(8).optional().messages({
-                        'string.min': 'Password must be at least 8 characters long',
-                    }),
-                    currentEmail: Joi.string().email().required(),
-                    currentPassword: Joi.string().min(8).required()
-                }),
-                params: Joi.object({
-                    uid: Joi.string().required(),
+                    calories: Joi.number().positive().required()
                 }),
                 failAction: (request, h, err) => {
                     throw err;
@@ -98,6 +64,48 @@ const routes = [
         }
     },
 
+    // Get data in calorie-history subcollection by date
+    {
+        method: 'GET',
+        path: '/users/{uid}/get-calorie-history',
+        handler: getCalorieHistoryByDateHandler,
+        options: {
+            validate: {
+                query: Joi.object({
+                    date: Joi.date().iso().required()
+                }),
+                failAction: (request, h, err) => {
+                    throw err;
+                }
+            }
+        }
+    },
+
+    // Get all data in calorie-history subcollection
+    {
+        method: 'GET',
+        path: '/users/{uid}/all-calorie-history',
+        handler: getAllCalorieHistoryHandler
+    },
+
+    // Edit data in calorie-history subcollection
+    {
+        method: 'PUT',
+        path: '/users/{uid}/calorie-history/{docId}',
+        handler: editCalorieHistoryHandler,
+        options: {
+            validate: {
+                payload: Joi.object({
+                    calories: Joi.number().positive().required()
+                }),
+                failAction: (request, h, err) => {
+                    throw err;
+                }
+            }
+        }
+    },
+
+    // Edit user information
     {
         method: 'PUT',
         path: '/edit-info/{uid}',
@@ -124,7 +132,51 @@ const routes = [
         }
     },
 
-    //Reset User Password 
+    //Protected Resources, verifying user token
+    {
+        method: 'GET',
+        path: '/protected',
+        options: {
+            pre: [{ method: verifyTokenHandler }],
+            handler: (request, h) => {
+                return { success: true, message: 'This is protected resources' };
+            }
+        }
+    },
+
+    //Get user info by uid
+    {
+        method: 'GET',
+        path: '/user/{uid}',
+        handler: getUserByIdHandler,
+    },
+
+    //Edit user credential, email or password
+    {
+        method: 'PUT',
+        path: '/edit-credential/{uid}',
+        handler: editUserDataHandler,
+        options: {
+            validate: {
+                payload: Joi.object({
+                    email: Joi.string().email().optional(),
+                    password: Joi.string().min(8).optional().messages({
+                        'string.min': 'Password must be at least 8 characters long',
+                    }),
+                    currentEmail: Joi.string().email().required(),
+                    currentPassword: Joi.string().min(8).required()
+                }),
+                params: Joi.object({
+                    uid: Joi.string().required(),
+                }),
+                failAction: (request, h, err) => {
+                    throw err;
+                }
+            }
+        }
+    },
+
+    //Reset user password using email 
     {
         method: 'POST',
         path: '/reset-password',
@@ -138,50 +190,13 @@ const routes = [
         }
     },
 
+    //User Logout
     {
         method: 'POST',
-        path: "/users/{uid}/calorie-history",
-        handler: addCalorieHistoryHandler,
-        options: {
-            validate: {
-                payload: Joi.object({
-                    calories: Joi.number().positive().required()
-                })
-            }
-        }
-    },
-
-    {
-        method: 'GET',
-        path: '/users/{uid}/calorie-history',
-        handler: getCalorieHistoryByDateHandler,
-        options: {
-            validate: {
-                query: Joi.object({
-                    date: Joi.date().iso().required()
-                })
-            }
-        }
-    },
-
-    {
-        method: 'GET',
-        path: '/users/{uid}/all-calorie-history',
-        handler: getAllCalorieHistoryHandler
-    },
-
-    {
-        method: 'PUT',
-        path: '/users/{uid}/calorie-history/{docId}',
-        handler: editCalorieHistoryHandler,
-        options: {
-            validate: {
-                payload: Joi.object({
-                    calories: Joi.number().positive().required()
-                })
-            }
-        }
+        path: '/logout',
+        handler: logoutHandler,
     }
+
 ];
 
 module.exports = routes;
