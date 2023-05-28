@@ -12,11 +12,11 @@
   - email as `string`
   - password as `string`, min 8 characters
   - username as `string`, min 3 characters
-  - gender as `string`
+  - gender as `string`, male or female
   - age as `number`
   - weight as `number`
   - height as `number`
-  - plan as `string`, optional
+  - plan as `string`, optional, defisit, bulking or null 
 - Response :
 
 ```json
@@ -148,7 +148,7 @@
   - weight as `number`, optional
   - height as `number`, optional
   - dailyCalorieNeeds as `number`, optional
-  - plan as `string`, optional
+  - plan as `string`, optional, defisit, bulking or null
 - Response :
 
 ```json
