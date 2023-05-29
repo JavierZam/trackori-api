@@ -483,4 +483,5 @@ module.exports = {
   resetPasswordHandler,
   logoutHandler,
   addAllCalorieHistoryHandler,
+  createDailyCalorieHistory,
 };
