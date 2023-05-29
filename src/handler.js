@@ -255,7 +255,7 @@ const editUserInfoHandler = async (request, h) => {
         if (weight) updateInfo.weight = weight;
         if (height) updateInfo.height = height;
         if (dailyCalorieNeeds) updateInfo.dailyCalorieNeeds = dailyCalorieNeeds;
-        if (plan !== undefined) updateInfo.plan = plan;
+        if (plan) updateInfo.plan = plan;
 
         // delete plan if plan is null
         if (plan === null) {
