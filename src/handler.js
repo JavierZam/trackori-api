@@ -436,7 +436,7 @@ const addAllCalorieHistoryHandler = async (request, h) => {
     return h.response({ success: true, message: 'Successfully added calorie history data for all users', data: { calories: calories } }).code(201);
   } catch (error) {
     console.error('Error adding calorie history data:', error);
-    return h.response('Error adding calorie history data').code(500);
+    return h.response({ message: 'Error adding calorie history data', error: error.toString() }).code(500);
   }
 };
 
