@@ -5,6 +5,8 @@ const Boom = require('@hapi/boom');
 const admin = require('firebase-admin');
 const firebaseConfig = require('./firebaseConfig');
 const { date } = require('joi');
+const cron = require('node-cron');
+const admin = require('firebase-admin');
 
 if (!getApps().length) {
   initializeApp(firebaseConfig);
@@ -439,6 +441,33 @@ const addAllCalorieHistoryHandler = async (request, h) => {
     return h.response({ message: 'Error adding calorie history data', error: error.toString() }).code(500);
   }
 };
+
+const createDailyCalorieHistory = async () => {
+  try {
+    const usersCollection = collection(db, 'users');
+    const userSnapshot = await getDocs(usersCollection);
+
+    // Add new document to 'calorie-history' subcollection for each user
+    for (const userDoc of userSnapshot.docs) {
+      const uid = userDoc.id;
+      const userRef = doc(db, 'users', uid);
+      const calorieHistoryCollection = collection(userRef, 'calorie-history');
+      const calorieHistoryDoc = doc(calorieHistoryCollection);
+      const dateNow = Timestamp.now();
+      await setDoc(calorieHistoryDoc, {
+        calories: 0,
+        date: dateNow,
+      });
+    }
+
+    console.log('Successfully created new calorie history document for all users');
+  } catch (error) {
+    console.error('Error creating new calorie history document:', error);
+  }
+};
+
+// Jalankan fungsi createDailyCalorieHistory setiap hari pukul 00:00
+cron.schedule('0 0 * * *', createDailyCalorieHistory);
 
 module.exports = {
   registerHandler,
