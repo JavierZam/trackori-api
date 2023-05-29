@@ -404,6 +404,33 @@ const logoutHandler = async (request, h) => {
     }
 };
 
+const addAllCalorieHistoryHandler = async (request, h) => {
+    const { calories } = request.payload;
+
+    try {
+        const usersCollection = collection(db, 'users');
+        const userSnapshot = await getDocs(usersCollection);
+
+        // Add new document to 'calorie-history' subcollection for each user
+        for (const userDoc of userSnapshot.docs) {
+            const uid = userDoc.id;
+            const userRef = doc(db, 'users', uid);
+            const calorieHistoryCollection = collection(userRef, 'calorie-history');
+            const calorieHistoryDoc = doc(calorieHistoryCollection);
+            const dateNow = Timestamp.now();
+            await setDoc(calorieHistoryDoc, {
+                calories,
+                date: dateNow
+            });
+        }
+
+        return h.response({ success: true, message:'Successfully added calorie history data for all users', data: {calories: calories}}).code(201);
+    } catch (error) {
+        console.error('Error adding calorie history data:', error);
+        return h.response('Error adding calorie history data').code(500);
+    }
+};
+
 module.exports = {
     registerHandler,
     loginHandler,
@@ -416,5 +443,6 @@ module.exports = {
     getUserByIdHandler,
     editUserDataHandler,
     resetPasswordHandler,
-    logoutHandler
+    logoutHandler,
+    addAllCalorieHistoryHandler
 };

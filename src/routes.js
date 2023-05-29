@@ -1,5 +1,5 @@
 const Joi = require('joi');
-const { registerHandler, loginHandler, verifyTokenHandler, logoutHandler, getUserByIdHandler, editUserDataHandler, editUserInfoHandler, resetPasswordHandler, addCalorieHistoryHandler, getCalorieHistoryByDateHandler, getAllCalorieHistoryHandler, editCalorieHistoryHandler } = require('./handler')
+const { registerHandler, loginHandler, verifyTokenHandler, logoutHandler, getUserByIdHandler, editUserDataHandler, editUserInfoHandler, resetPasswordHandler, addCalorieHistoryHandler, getCalorieHistoryByDateHandler, getAllCalorieHistoryHandler, editCalorieHistoryHandler, addAllCalorieHistoryHandler } = require('./handler')
 
 const routes = [
 
@@ -195,7 +195,24 @@ const routes = [
         method: 'POST',
         path: '/logout',
         handler: logoutHandler,
-    }
+    },
+
+    // Add new document in calorie-history subcollection to all users
+    {
+        method: 'POST',
+        path: "/users/calorie-history",
+        handler: addAllCalorieHistoryHandler,
+        options: {
+            validate: {
+                payload: Joi.object({
+                    calories: Joi.number().positive().required()
+                }),
+                failAction: (request, h, err) => {
+                    throw err;
+                }
+            }
+        }
+    },
 
 ];
 
