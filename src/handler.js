@@ -6,7 +6,6 @@ const admin = require('firebase-admin');
 const firebaseConfig = require('./firebaseConfig');
 const { date } = require('joi');
 const cron = require('node-cron');
-const admin = require('firebase-admin');
 
 if (!getApps().length) {
   initializeApp(firebaseConfig);
