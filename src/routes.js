@@ -210,13 +210,6 @@ const routes = [
     handler: logoutHandler,
   },
 
-  // Create new document in calorie-history subcollection for all users
-  {
-    method: 'POST',
-    path: '/users/create-daily-calorie-history',
-    handler: createDailyCalorieHistory,
-  },
-
   // Add new document in calorie-history subcollection to all users
   {
     method: 'POST',
