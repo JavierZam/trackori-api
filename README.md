@@ -183,7 +183,7 @@
 
 ### Get user info by uid
 
-- Path : `/user{uid}`
+- Path : `/user/{uid}`
 - Method : `GET`
 - Response :
 
