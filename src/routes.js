@@ -120,7 +120,7 @@ const routes = [
                     height: Joi.number().positive().allow(null).optional(),
                     weight: Joi.number().positive().allow(null).optional(),
                     dailyCalorieNeeds: Joi.number().positive().allow(null).optional(),
-                    plan: Joi.string().trim().allow('', null).valid('defisit', 'bulking').optional(),
+                    plan: Joi.string().trim().allow('', null).valid('defisit', 'bulking', 'no plan').optional(),
                 }),
                 params: Joi.object({
                     uid: Joi.string().required(),
