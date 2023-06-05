@@ -22,7 +22,7 @@ const routes = [
                     age: Joi.number().integer().min(1).required(),
                     weight: Joi.number().positive().required(),
                     height: Joi.number().positive().required(),
-                    plan: Joi.string().trim().allow('', null).valid('defisit', 'bulking').optional()
+                    plan: Joi.string().trim().allow('', null).valid('defisit', 'bulking', 'no plan').optional()
                 }),
                 failAction: (request, h, err) => {
                     throw err;
