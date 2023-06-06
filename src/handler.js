@@ -159,23 +159,27 @@ const getCalorieHistoryByDateHandler = async (request, h) => {
         );
 
         const querySnapshot = await getDocs(q);
-        const data = querySnapshot.docs.map(doc => {
-            const docData = doc.data();
+        const firstDoc = querySnapshot.docs[0]; // Get the first document
+        if (firstDoc) {
+            const docData = firstDoc.data();
             const dateObj = docData.date.toDate();
             const formattedDate = `${dateObj.getDate().toString().padStart(2, '0')}-${(dateObj.getMonth() + 1).toString().padStart(2, '0')}-${dateObj.getFullYear()}`;
-            return {
-                id: doc.id,
+            const data = {
+                id: firstDoc.id,
                 date: formattedDate,
                 calories: docData.calories,
             };
-        });
-
-        return h.response({ success: true, message: 'Successfully fetching calorie history data by date', data: data }).code(200);
+            
+            return h.response({ success: true, message: 'Successfully fetching calorie history data by date', data: data }).code(200);
+        } else {
+            return h.response({ success: false, message: 'No data available for the provided date' }).code(404);
+        }
     } catch (error) {
         console.error('Error getting calorie history:', error);
         return h.response({ success: false, message: 'Error getting calorie history' }).code(500);
     }
 };
+
 
 
 
