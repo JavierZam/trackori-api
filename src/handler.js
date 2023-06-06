@@ -159,7 +159,7 @@ const getCalorieHistoryByDateHandler = async (request, h) => {
         );
 
         const querySnapshot = await getDocs(q);
-        const firstDoc = querySnapshot.docs[0]; // Get the first document
+        const firstDoc = querySnapshot.docs[0];
         if (firstDoc) {
             const docData = firstDoc.data();
             const dateObj = docData.date.toDate();
