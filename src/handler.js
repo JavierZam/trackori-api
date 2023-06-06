@@ -19,6 +19,41 @@ const app = getApp();
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+const saveTokenToDatabase = async (uid, token) => {
+  const userDoc = doc(db, 'users', uid);
+  await updateDoc(userDoc, { token: token });
+};
+
+const getTokenFromDatabase = async (uid) => {
+  const userDoc = doc(db, 'users', uid);
+  const docSnap = await getDoc(userDoc);
+  if (docSnap.exists()) {
+    const userData = docSnap.data();
+    return userData.token;
+  }
+  return null;
+};
+
+const refreshAccessToken = async (uid) => {
+  // Simulasi pengambilan refresh token dari database atau sesi server
+  const refreshToken = await getTokenFromDatabase(uid);
+
+  // Simulasi pembaruan access token menggunakan refresh token
+  const refreshedToken = await refreshAccessTokenWithRefreshToken(refreshToken);
+
+  // Simpan access token yang baru di database atau sesi server
+  await saveTokenToDatabase(uid, refreshedToken);
+
+  return refreshedToken;
+};
+
+// Fungsi untuk memperbarui access token menggunakan refresh token (implementasi sesuai kebutuhan)
+const refreshAccessTokenWithRefreshToken = async (refreshToken) => {
+  // Implementasi pembaruan access token dengan menggunakan refresh token
+  // ...
+  // return token yang baru diperbarui
+};
+
 //User Register
 const registerHandler = async (request, h) => {
   const { email, password, username, weight, height } = request.payload;
@@ -70,6 +105,9 @@ const loginHandler = async (request, h) => {
       username = docSnap.data().username;
     }
 
+    // Simpan access token ke database atau sesi server
+    await saveTokenToDatabase(user.uid, idToken);
+
     return h.response({ success: true, message: 'Login Successfully', data: { uid: user.uid, email: user.email, username: username, accessToken: idToken } }).code(200);
   } catch (error) {
     console.error('Error logging in user:', error);
@@ -103,6 +141,10 @@ const verifyTokenHandler = async (request, h) => {
 const logoutHandler = async (request, h) => {
   try {
     await signOut(auth);
+
+    // Menghapus access token dari database atau sesi server saat logout
+    await saveTokenToDatabase(request.user.uid, null);
+
     return h.response({ success: true, message: 'Logged out successfully' }).code(200);
   } catch (error) {
     console.error('Error logging out user:', error);
