@@ -13,7 +13,6 @@ const {
   getAllCalorieHistoryHandler,
   editCalorieHistoryHandler,
   addAllCalorieHistoryHandler,
-  createDailyCalorieHistory,
 } = require('./handler');
 
 const routes = [
@@ -36,7 +35,7 @@ const routes = [
           age: Joi.number().integer().min(1).required(),
           weight: Joi.number().positive().required(),
           height: Joi.number().positive().required(),
-          plan: Joi.string().trim().allow('', null).valid('defisit', 'bulking').optional(),
+          plan: Joi.string().trim().allow('', null).valid('defisit', 'bulking', 'no plan').optional(),
         }),
         failAction: (request, h, err) => {
           throw err;
@@ -126,14 +125,14 @@ const routes = [
     options: {
       validate: {
         payload: Joi.object({
-          username: Joi.string().alphanum().min(3).max(20).optional().messages({
+          username: Joi.string().alphanum().trim().allow('', null).min(3).max(20).optional().messages({
             'string.min': 'Username must be between 3 and 20 characters',
           }),
-          age: Joi.number().integer().min(1).optional(),
-          height: Joi.number().positive().optional(),
-          weight: Joi.number().positive().optional(),
-          dailyCalorieNeeds: Joi.number().positive().optional(),
-          plan: Joi.string().trim().allow('', null).valid('defisit', 'bulking').optional(),
+          age: Joi.number().integer().allow(null).min(1).optional(),
+          height: Joi.number().positive().allow(null).optional(),
+          weight: Joi.number().positive().allow(null).optional(),
+          dailyCalorieNeeds: Joi.number().positive().allow(null).optional(),
+          plan: Joi.string().trim().allow('', null).valid('defisit', 'bulking', 'no plan').optional(),
         }),
         params: Joi.object({
           uid: Joi.string().required(),
@@ -172,8 +171,8 @@ const routes = [
     options: {
       validate: {
         payload: Joi.object({
-          email: Joi.string().email().optional(),
-          password: Joi.string().min(8).optional().messages({
+          email: Joi.string().email().trim().allow('', null).optional(),
+          password: Joi.string().trim().allow('', null).min(8).optional().messages({
             'string.min': 'Password must be at least 8 characters long',
           }),
           currentEmail: Joi.string().email().required(),

@@ -1,11 +1,10 @@
 const { initializeApp, getApps, getApp } = require('firebase/app');
 const { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateEmail, updatePassword, sendPasswordResetEmail } = require('firebase/auth');
-const { getFirestore, collection, doc, setDoc, getDoc, updateDoc, query, where, getDocs, Timestamp, deleteField, orderBy } = require('firebase/firestore');
+const { getFirestore, collection, doc, setDoc, getDoc, updateDoc, query, where, getDocs, Timestamp, deleteField, orderBy, startAt, endBefore } = require('firebase/firestore');
 const Boom = require('@hapi/boom');
 const admin = require('firebase-admin');
 const firebaseConfig = require('./firebaseConfig');
 const { date } = require('joi');
-const cron = require('node-cron');
 
 if (!getApps().length) {
   initializeApp(firebaseConfig);
@@ -20,41 +19,6 @@ if (!admin.apps.length) {
 const app = getApp();
 const auth = getAuth(app);
 const db = getFirestore(app);
-
-const saveTokenToDatabase = async (uid, token) => {
-  const userDoc = doc(db, 'users', uid);
-  await updateDoc(userDoc, { token: token });
-};
-
-const getTokenFromDatabase = async (uid) => {
-  const userDoc = doc(db, 'users', uid);
-  const docSnap = await getDoc(userDoc);
-  if (docSnap.exists()) {
-    const userData = docSnap.data();
-    return userData.token;
-  }
-  return null;
-};
-
-const refreshAccessToken = async (uid) => {
-  // Simulasi pengambilan refresh token dari database atau sesi server
-  const refreshToken = await getTokenFromDatabase(uid);
-
-  // Simulasi pembaruan access token menggunakan refresh token
-  const refreshedToken = await refreshAccessTokenWithRefreshToken(refreshToken);
-
-  // Simpan access token yang baru di database atau sesi server
-  await saveTokenToDatabase(uid, refreshedToken);
-
-  return refreshedToken;
-};
-
-// Fungsi untuk memperbarui access token menggunakan refresh token (implementasi sesuai kebutuhan)
-const refreshAccessTokenWithRefreshToken = async (refreshToken) => {
-  // Implementasi pembaruan access token dengan menggunakan refresh token
-  // ...
-  // return token yang baru diperbarui
-};
 
 //User Register
 const registerHandler = async (request, h) => {
@@ -134,9 +98,6 @@ const loginHandler = async (request, h) => {
       username = docSnap.data().username;
     }
 
-    // Simpan access token ke database atau sesi server
-    await saveTokenToDatabase(user.uid, idToken);
-
     return h.response({ success: true, message: 'Login Successfully', data: { uid: user.uid, email: user.email, username: username, accessToken: idToken } }).code(200);
   } catch (error) {
     console.error('Error logging in user:', error);
@@ -183,36 +144,31 @@ const getCalorieHistoryByDateHandler = async (request, h) => {
   try {
     const userDoc = doc(db, 'users', uid);
     const calorieHistoryCollection = collection(userDoc, 'calorie-history');
-    // Start the date
-    const startDate = new Date(date);
-    startDate.setHours(0, 0, 0, 0);
-    // End the date
-    const endDate = new Date(startDate);
-    endDate.setDate(startDate.getDate() + 1);
 
-    // Query documents with start date
-    const startQuery = query(calorieHistoryCollection, where('date', '>=', Timestamp.fromDate(startDate)));
-    // Query documents with end date
-    const endQuery = query(calorieHistoryCollection, where('date', '<', Timestamp.fromDate(endDate)));
+    const inputDate = new Date(date);
+    inputDate.setHours(0, 0, 0, 0);
+    const nextDate = new Date(inputDate);
+    nextDate.setDate(inputDate.getDate() + 1);
 
-    const startSnapshot = await getDocs(startQuery);
-    const endSnapshot = await getDocs(endQuery);
+    // Get documents between inputDate and nextDate
+    const q = query(calorieHistoryCollection, orderBy('date'), startAt(Timestamp.fromDate(inputDate)), endBefore(Timestamp.fromDate(nextDate)));
 
-    // Get calorie and date data
-    // const startData = startSnapshot.docs.map(doc => ({ id: doc.id, calories: doc.data().calories, date: doc.data().date.toDate().toISOString() }));
-    const startData = startSnapshot.docs.map((doc) => {
-      const dateObj = doc.data().date.toDate();
-      // Format the date to 'DD-MM-YYYY'
+    const querySnapshot = await getDocs(q);
+    const data = querySnapshot.docs.map((doc) => {
+      const docData = doc.data();
+      const dateObj = docData.date.toDate();
       const formattedDate = `${dateObj.getDate().toString().padStart(2, '0')}-${(dateObj.getMonth() + 1).toString().padStart(2, '0')}-${dateObj.getFullYear()}`;
-      return { id: doc.id, calories: doc.data().calories, date: formattedDate };
+      return {
+        id: doc.id,
+        date: formattedDate,
+        calories: docData.calories,
+      };
     });
-    const endData = endSnapshot.docs.map((doc) => doc.id);
-    const data = startData.filter((doc) => endData.includes(doc.id));
 
-    return h.response({ success: true, message: 'Succesfully fetching calories data by date', data: data }).code(200);
+    return h.response({ success: true, message: 'Successfully fetching calorie history data by date', data: data }).code(200);
   } catch (error) {
-    console.error('Error fetching calorie-history data:', error);
-    return h.response({ success: false, message: 'Error fetching calorie-history data' }).code(500);
+    console.error('Error getting calorie history:', error);
+    return h.response({ success: false, message: 'Error getting calorie history' }).code(500);
   }
 };
 
@@ -294,7 +250,7 @@ const editUserInfoHandler = async (request, h) => {
     if (weight) updateInfo.weight = weight;
     if (height) updateInfo.height = height;
     if (dailyCalorieNeeds) updateInfo.dailyCalorieNeeds = dailyCalorieNeeds;
-    if (plan !== undefined) updateInfo.plan = plan;
+    if (plan) updateInfo.plan = plan;
 
     // delete plan if plan is null
     if (plan === null) {
@@ -345,17 +301,6 @@ const verifyTokenHandler = async (request, h) => {
   } catch (error) {
     console.error({ success: false, message: 'Error verifying token', error });
     throw Boom.unauthorized('Invalid token');
-  }
-};
-
-//User Logout
-const logoutHandler = async (request, h) => {
-  try {
-    await signOut(auth);
-    return h.response({ success: true, message: 'Logged out successfully' }).code(200);
-  } catch (error) {
-    console.error('Error logging out user:', error);
-    return h.response({ success: false, message: 'Something went wrong' }).code(400);
   }
 };
 
@@ -486,36 +431,9 @@ const addAllCalorieHistoryHandler = async (request, h) => {
     return h.response({ success: true, message: 'Successfully added calorie history data for all users', data: { calories: calories } }).code(201);
   } catch (error) {
     console.error('Error adding calorie history data:', error);
-    return h.response({ message: 'Error adding calorie history data', error: error.toString() }).code(500);
+    return h.response('Error adding calorie history data').code(500);
   }
 };
-
-const createDailyCalorieHistory = async () => {
-  try {
-    const usersCollection = collection(db, 'users');
-    const userSnapshot = await getDocs(usersCollection);
-
-    // Add new document to 'calorie-history' subcollection for each user
-    for (const userDoc of userSnapshot.docs) {
-      const uid = userDoc.id;
-      const userRef = doc(db, 'users', uid);
-      const calorieHistoryCollection = collection(userRef, 'calorie-history');
-      const calorieHistoryDoc = doc(calorieHistoryCollection);
-      const dateNow = Timestamp.now();
-      await setDoc(calorieHistoryDoc, {
-        calories: 0,
-        date: dateNow,
-      });
-    }
-
-    console.log('Successfully created new calorie history document for all users');
-  } catch (error) {
-    console.error('Error creating new calorie history document:', error);
-  }
-};
-
-// Jalankan fungsi createDailyCalorieHistory setiap hari pukul 00:00
-cron.schedule('0 0 * * *', createDailyCalorieHistory);
 
 module.exports = {
   registerHandler,
@@ -531,5 +449,4 @@ module.exports = {
   resetPasswordHandler,
   logoutHandler,
   addAllCalorieHistoryHandler,
-  createDailyCalorieHistory,
 };
