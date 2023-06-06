@@ -2,8 +2,6 @@
 
 ## Endpoint
 
-- base url : https://trackori-authentication-api-ymrdyfncwq-et.a.run.app/
-
 ### Register User
 
 - Path : `/register`
@@ -185,7 +183,7 @@
 
 ### Get user info by uid
 
-- Path : `/user{uid}`
+- Path : `/user/{uid}`
 - Method : `GET`
 - Response :
 
