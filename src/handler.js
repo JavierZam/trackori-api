@@ -1,6 +1,6 @@
 const { initializeApp, getApps, getApp } = require('firebase/app');
 const { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateEmail, updatePassword, sendPasswordResetEmail } = require('firebase/auth');
-const { getFirestore, collection, doc, setDoc, getDoc, updateDoc, query, where, getDocs, Timestamp, deleteField, orderBy } = require('firebase/firestore');
+const { getFirestore, collection, doc, setDoc, getDoc, updateDoc, query, where, getDocs, Timestamp, deleteField, orderBy, startAt, endBefore } = require('firebase/firestore');
 const Boom = require('@hapi/boom');
 const admin = require('firebase-admin');
 const firebaseConfig = require('./firebaseConfig');
@@ -68,7 +68,7 @@ const registerHandler = async (request, h) => {
             date: Timestamp.now()
         });
 
-        return h.response({ success: true, message: 'User registered successfully', data: { uid: user.uid, email: user.email, username: username }}).code(201);
+        return h.response({ success: true, message: 'User registered successfully', data: { uid: user.uid, email: user.email, username: username } }).code(201);
     } catch (error) {
         console.error({ success: false, message: 'Something went wrong:', error });
 
@@ -129,10 +129,10 @@ const addCalorieHistoryHandler = async (request, h) => {
         const dateObj = dateNow.toDate();
         // Format the date to 'DD-MM-YYYY'
         const formattedDate = `${dateObj.getDate().toString().padStart(2, '0')}-${(dateObj.getMonth() + 1).toString().padStart(2, '0')}-${dateObj.getFullYear()}`;
-        return h.response({ success: true, message:'Successfully add new calorie history data', data: {calories: calories, date: formattedDate}}).code(201);
+        return h.response({ success: true, message: 'Successfully add new calorie history data', data: { calories: calories, date: formattedDate } }).code(201);
     } catch (error) {
         console.error('Error add calorie history data:', error);
-        return h.response({ success: false, message: 'Error add calorie history data'}).code(500);
+        return h.response({ success: false, message: 'Error add calorie history data' }).code(500);
     }
 };
 
@@ -144,38 +144,40 @@ const getCalorieHistoryByDateHandler = async (request, h) => {
     try {
         const userDoc = doc(db, 'users', uid);
         const calorieHistoryCollection = collection(userDoc, 'calorie-history');
-        // Start the date
-        const startDate = new Date(date);
-        startDate.setHours(0, 0, 0, 0);
-        // End the date
-        const endDate = new Date(startDate);
-        endDate.setDate(startDate.getDate() + 1);
 
-        // Query documents with start date
-        const startQuery = query(calorieHistoryCollection, where('date', '>=', Timestamp.fromDate(startDate)));
-        // Query documents with end date
-        const endQuery = query(calorieHistoryCollection, where('date', '<', Timestamp.fromDate(endDate)));
+        const inputDate = new Date(date);
+        inputDate.setHours(0, 0, 0, 0);
+        const nextDate = new Date(inputDate);
+        nextDate.setDate(inputDate.getDate() + 1);
 
-        const startSnapshot = await getDocs(startQuery);
-        const endSnapshot = await getDocs(endQuery);
+        // Get documents between inputDate and nextDate
+        const q = query(
+            calorieHistoryCollection,
+            orderBy('date'),
+            startAt(Timestamp.fromDate(inputDate)),
+            endBefore(Timestamp.fromDate(nextDate))
+        );
 
-        // Get calorie and date data
-        // const startData = startSnapshot.docs.map(doc => ({ id: doc.id, calories: doc.data().calories, date: doc.data().date.toDate().toISOString() }));
-        const startData = startSnapshot.docs.map(doc => {
-            const dateObj = doc.data().date.toDate();
-            // Format the date to 'DD-MM-YYYY'
+        const querySnapshot = await getDocs(q);
+        const data = querySnapshot.docs.map(doc => {
+            const docData = doc.data();
+            const dateObj = docData.date.toDate();
             const formattedDate = `${dateObj.getDate().toString().padStart(2, '0')}-${(dateObj.getMonth() + 1).toString().padStart(2, '0')}-${dateObj.getFullYear()}`;
-            return { id: doc.id, calories: doc.data().calories, date: formattedDate };
+            return {
+                id: doc.id,
+                date: formattedDate,
+                calories: docData.calories,
+            };
         });
-        const endData = endSnapshot.docs.map(doc => doc.id);
-        const data = startData.filter(doc => endData.includes(doc.id));
 
-        return h.response({ success: true, message: 'Succesfully fetching calories data by date', data: data}).code(200);
+        return h.response({ success: true, message: 'Successfully fetching calorie history data by date', data: data }).code(200);
     } catch (error) {
-        console.error('Error fetching calorie-history data:', error);
-        return h.response({ success: false, message: 'Error fetching calorie-history data'}).code(500);
+        console.error('Error getting calorie history:', error);
+        return h.response({ success: false, message: 'Error getting calorie history' }).code(500);
     }
 };
+
+
 
 // Get all data from calorie-history subcollection
 const getAllCalorieHistoryHandler = async (request, h) => {
@@ -184,7 +186,7 @@ const getAllCalorieHistoryHandler = async (request, h) => {
     try {
         const userDoc = doc(db, 'users', uid);
         const calorieHistoryCollection = collection(userDoc, 'calorie-history');
-        
+
         // Show data from newest by date
         const q = query(calorieHistoryCollection, orderBy('date', 'desc'));
         const querySnapshot = await getDocs(q);
@@ -199,10 +201,10 @@ const getAllCalorieHistoryHandler = async (request, h) => {
             };
         });
 
-        return h.response({ success:true, message: 'Succesfully fetching all calorie history data', data: data}).code(200);
+        return h.response({ success: true, message: 'Succesfully fetching all calorie history data', data: data }).code(200);
     } catch (error) {
         console.error('Error getting calorie history:', error);
-        return h.response({ success: false, message: 'Error getting calorie history'}).code(500);
+        return h.response({ success: false, message: 'Error getting calorie history' }).code(500);
     }
 };
 
@@ -220,17 +222,17 @@ const editCalorieHistoryHandler = async (request, h) => {
         if (!updatedDoc.exists()) {
             // Handle error: document doesn't exist
             console.error('Document does not exist:', docId);
-            return h.response({ success:false, message: 'Document does not exist'}).code(404);
+            return h.response({ success: false, message: 'Document does not exist' }).code(404);
         }
         const updatedData = updatedDoc.data();
         const dateObj = updatedData.date.toDate();
         // Format the date to 'DD-MM-YYYY'
         const formattedDate = `${dateObj.getDate().toString().padStart(2, '0')}-${(dateObj.getMonth() + 1).toString().padStart(2, '0')}-${dateObj.getFullYear()}`;
 
-        return h.response({ success: true, message: 'Successfully updated calorie history', data: {calories: calories, date: formattedDate}}).code(200);
+        return h.response({ success: true, message: 'Successfully updated calorie history', data: { calories: calories, date: formattedDate } }).code(200);
     } catch (error) {
         console.error('Error updating calorie history:', error);
-        return h.response({ success: false, message: 'Error updating calorie history'}).code(500);
+        return h.response({ success: false, message: 'Error updating calorie history' }).code(500);
     }
 };
 
@@ -284,7 +286,7 @@ const editUserInfoHandler = async (request, h) => {
         return h.response({ success: true, message: 'Profile updated successfully', data: { uid: uid, username: updateInfo.username, gender: updateInfo.gender, age: updateInfo.age, weight: updateInfo.weight, height: updateInfo.height, dailyCalorieNeeds: updateInfo.dailyCalorieNeeds, plan: updateInfo.plan } }).code(200);
     } catch (error) {
         console.error('Error updating profile:', error);
-        return h.response({ success: false, message: 'Error updating user information'})
+        return h.response({ success: false, message: 'Error updating user information' })
     }
 };
 
@@ -424,7 +426,7 @@ const addAllCalorieHistoryHandler = async (request, h) => {
             });
         }
 
-        return h.response({ success: true, message:'Successfully added calorie history data for all users', data: {calories: calories}}).code(201);
+        return h.response({ success: true, message: 'Successfully added calorie history data for all users', data: { calories: calories } }).code(201);
     } catch (error) {
         console.error('Error adding calorie history data:', error);
         return h.response('Error adding calorie history data').code(500);
