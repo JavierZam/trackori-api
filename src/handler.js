@@ -410,6 +410,7 @@ const logoutHandler = async (request, h) => {
     }
 };
 
+// Create new document for all user
 const addAllCalorieHistoryHandler = async (request, h) => {
     const { calories } = request.payload;
 
@@ -437,6 +438,48 @@ const addAllCalorieHistoryHandler = async (request, h) => {
     }
 };
 
+// Get all data in foods-history
+const getAllFoodsHistoryHandler = async (request, h) => {
+    const { uid } = request.params;
+
+    try {
+        const userDoc = doc(db, 'users', uid);
+        const foodsHistoryCollection = collection(userDoc, 'foods-history');
+
+        // Fetch all documents from the subcollection
+        const snapshot = await getDocs(foodsHistoryCollection);
+        const data = snapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
+
+        return h.response({ success: true, message: 'Successfully fetching all foods history data', data: data }).code(200);
+    } catch (error) {
+        console.error('Error getting foods history:', error);
+        return h.response({ success: false, message: 'Error getting foods history' }).code(500);
+    }
+};
+
+// Get data in foods-history by id
+const getFoodsHistoryByIdHandler = async (request, h) => {
+    const { uid, docId } = request.params;
+
+    try {
+        const userDoc = doc(db, 'users', uid);
+        const foodsHistoryCollection = collection(userDoc, 'foods-history');
+        const foodDoc = doc(foodsHistoryCollection, docId);
+
+        // Fetch the document
+        const foodDocSnapshot = await getDoc(foodDoc);
+        if (!foodDocSnapshot.exists()) {
+            return h.response({ success: false, message: 'Food history not found' }).code(404);
+        }
+        const data = {id: foodDocSnapshot.id, ...foodDocSnapshot.data()};
+
+        return h.response({ success: true, message: 'Successfully fetching the food history data', data: data }).code(200);
+    } catch (error) {
+        console.error('Error getting food history:', error);
+        return h.response({ success: false, message: 'Error getting food history' }).code(500);
+    }
+};
+
 module.exports = {
     registerHandler,
     loginHandler,
@@ -450,5 +493,7 @@ module.exports = {
     editUserDataHandler,
     resetPasswordHandler,
     logoutHandler,
-    addAllCalorieHistoryHandler
+    addAllCalorieHistoryHandler,
+    getAllFoodsHistoryHandler,
+    getFoodsHistoryByIdHandler
 };

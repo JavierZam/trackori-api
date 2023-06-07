@@ -1,5 +1,5 @@
 const Joi = require('joi');
-const { registerHandler, loginHandler, verifyTokenHandler, logoutHandler, getUserByIdHandler, editUserDataHandler, editUserInfoHandler, resetPasswordHandler, addCalorieHistoryHandler, getCalorieHistoryByDateHandler, getAllCalorieHistoryHandler, editCalorieHistoryHandler, addAllCalorieHistoryHandler } = require('./handler')
+const { registerHandler, loginHandler, verifyTokenHandler, logoutHandler, getUserByIdHandler, editUserDataHandler, editUserInfoHandler, resetPasswordHandler, addCalorieHistoryHandler, getCalorieHistoryByDateHandler, getAllCalorieHistoryHandler, editCalorieHistoryHandler, addAllCalorieHistoryHandler, getAllFoodsHistoryHandler, getFoodsHistoryByIdHandler } = require('./handler')
 
 const routes = [
 
@@ -197,7 +197,7 @@ const routes = [
         handler: logoutHandler,
     },
 
-    // Add new document in calorie-history subcollection to all users
+    // // Create new document for all user
     {
         method: 'POST',
         path: "/users/calorie-history",
@@ -212,6 +212,20 @@ const routes = [
                 }
             }
         }
+    },
+
+    // Get all data in foods-history subcollection
+    {
+        method: 'GET',
+        path: '/users/{uid}/all-foods-history',
+        handler: getAllFoodsHistoryHandler
+    },
+    
+    // Get data in foods-history by id
+    {
+        method: 'GET',
+        path: '/users/{uid}/foods-history/{docId}',
+        handler: getFoodsHistoryByIdHandler
     },
 
 ];
