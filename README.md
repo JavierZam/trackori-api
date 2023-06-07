@@ -257,3 +257,62 @@
     "message": "Logged out successfully"
 }
 ```
+
+### Get all data in foods-history
+
+- Path : `/users/{uid}/all-foods-history`
+- Method : `GET`
+- Response :
+
+```json
+{
+    "success": true,
+    "message": "Successfully fetching all foods history data",
+    "data": [
+        {
+            "id": "Yw358lmHecym3QwVUlKQ",
+            "kalori": 0,
+            "nama": "air",
+            "image_url": "https://storage.googleapis.com/foods-image/5TcC8rY4L7VsSR2lWAZiVnDDSgy2/Yw358lmHecym3QwVUlKQ",
+            "satuan": "ml"
+        },
+        {
+            "id": "klB7T8zGQQl7RbdQRTSs"
+        },
+        {
+            "id": "uZBE9cL6hr7Wk8BO46DD",
+            "kalori": 125,
+            "satuan": "100 gram",
+            "nama": "cumi_goreng_tepung",
+            "image_url": "https://storage.googleapis.com/foods-image/5TcC8rY4L7VsSR2lWAZiVnDDSgy2/uZBE9cL6hr7Wk8BO46DD"
+        },
+        {
+            "id": "zcdXvuKwoOWAwSP4BSfW",
+            "satuan": "butir",
+            "image_url": "https://storage.googleapis.com/foods-image/5TcC8rY4L7VsSR2lWAZiVnDDSgy2/zcdXvuKwoOWAwSP4BSfW",
+            "kalori": 71,
+            "nama": "telur_balado"
+        }
+    ]
+}
+```
+
+### Get data in foods-history by id
+
+- Path : `/users/{uid}/foods-history/{docId}`
+- Method : `GET`
+- Response :
+
+```json
+{
+    "success": true,
+    "message": "Successfully fetching the food history data",
+    "data": {
+        "id": "Yw358lmHecym3QwVUlKQ",
+        "satuan": "ml",
+        "image_url": "https://storage.googleapis.com/foods-image/5TcC8rY4L7VsSR2lWAZiVnDDSgy2/Yw358lmHecym3QwVUlKQ",
+        "kalori": 0,
+        "nama": "air"
+    }
+}
+```
