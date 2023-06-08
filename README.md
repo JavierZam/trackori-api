@@ -1,3 +1,5 @@
+![User Api](https://github.com/C23-PS317/trackori-authentication-api/assets/69651946/e532f953-410d-4a8d-a491-a0670e0bd7f5)
+
 # Trackori Authentication API
 
 ## Endpoint
