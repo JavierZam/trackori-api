@@ -318,3 +318,42 @@
     }
 }
 ```
+
+### Get all data in foods collection
+
+- Path : `/foods`
+- Method : `GET`
+- Response :
+
+```json
+{
+    "success": true,
+    "message": "Successfully fetching all foods data",
+    "data": [
+        {
+            "id": "air",
+            "satuan": "ml",
+            "nama": "air",
+            "kalori": 0
+        },
+        {
+            "id": "anggur",
+            "nama": "anggur",
+            "satuan": "butir",
+            "kalori": 3
+        },
+        {
+            "id": "apel",
+            "satuan": "buah",
+            "kalori": 72,
+            "nama": "apel"
+        },
+        {
+            "id": "ayam_goreng",
+            "nama": "ayam goreng",
+            "satuan": "100 gram",
+            "kalori": 260
+        },
+
+        .....
+```
