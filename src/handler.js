@@ -480,6 +480,7 @@ const getFoodsHistoryByIdHandler = async (request, h) => {
     }
 };
 
+// Get all data in foods collection
 const getAllFoodsCollectionHandler = async (request, h) => {
     try {
         const foodsCollection = collection(db, 'foods');
@@ -492,6 +493,33 @@ const getAllFoodsCollectionHandler = async (request, h) => {
     } catch (error) {
         console.error('Error getting foods:', error);
         return h.response({ success: false, message: 'Error fetching foods data' }).code(500);
+    }
+};
+
+// Get data in foods collection by id
+const getFoodsByIdHandler = async (request, h) => {
+    const { docId } = request.params;
+
+    try {
+        const foodDoc = doc(db, 'foods', docId);
+
+        // Fetch single document from the collection
+        const snapshot = await getDoc(foodDoc);
+        if (snapshot.exists()) {
+            const data = {
+                id: snapshot.id,
+                nama: snapshot.data().nama,
+                kalori: snapshot.data().kalori,
+                satuan: snapshot.data().satuan
+            };
+            return h.response({ success: true, message: 'Successfully fetching food data', data: data }).code(200);
+        } else {
+            return h.response({ success: false, message: 'Food not found' }).code(404);
+        }
+        
+    } catch (error) {
+        console.error('Error getting food:', error);
+        return h.response({ success: false, message: 'Error getting food' }).code(500);
     }
 };
 
@@ -511,5 +539,6 @@ module.exports = {
     addAllCalorieHistoryHandler,
     getAllFoodsHistoryHandler,
     getFoodsHistoryByIdHandler,
-    getAllFoodsCollectionHandler
+    getAllFoodsCollectionHandler,
+    getFoodsByIdHandler
 };
