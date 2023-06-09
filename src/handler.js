@@ -5,7 +5,7 @@ const Boom = require('@hapi/boom');
 const admin = require('firebase-admin');
 const firebaseConfig = require('./firebaseConfig');
 const { date } = require('joi');
-
+//test
 if (!getApps().length) {
   initializeApp(firebaseConfig);
 }
