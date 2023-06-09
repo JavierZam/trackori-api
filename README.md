@@ -354,6 +354,28 @@
             "satuan": "100 gram",
             "kalori": 260
         },
+        ......
+    ]
+}
+```
 
-        .....
+### Get all data in foods collection
+
+- Path : `/foods/{docId}`
+- Method : `GET`
+- Response :
+
+```json
+{
+    "success": true,
+    "message": "Successfully fetching all foods data",
+    "data": 
+        {
+            "id": "air",
+            "satuan": "ml",
+            "nama": "air",
+            "kalori": 0
+        }
+      
+}
 ```
