@@ -67,6 +67,7 @@
     "success": true,
     "message": "Successfully add new calorie history data",
     "data": {
+        "id": "Lf2xQ5j8G7X57HO8eIie",
         "name": "burger",
         "calories": 300,
         "date": "DD-MM-YYYY"

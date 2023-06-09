@@ -130,12 +130,13 @@ const addCalorieHistoryHandler = async (request, h) => {
         const dateObj = dateNow.toDate();
         // Format the date to 'DD-MM-YYYY'
         const formattedDate = `${dateObj.getDate().toString().padStart(2, '0')}-${(dateObj.getMonth() + 1).toString().padStart(2, '0')}-${dateObj.getFullYear()}`;
-        return h.response({ success: true, message: 'Successfully add new calorie history data', data: { name: name, calories: calories, date: formattedDate } }).code(201);
+        return h.response({ success: true, message: 'Successfully add new calorie history data', data: { id: calorieHistoryDoc.id, name: name, calories: calories, date: formattedDate } }).code(201);
     } catch (error) {
         console.error('Error add calorie history data:', error);
         return h.response({ success: false, message: 'Error add calorie history data' }).code(500);
     }
 };
+
 
 // Get data from calorie-history subcollection by date
 const getCalorieHistoryByDateHandler = async (request, h) => {
