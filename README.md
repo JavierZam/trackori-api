@@ -384,7 +384,7 @@
 }
 ```
 
-### Get all data in foods collection
+### Get data in foods collection by id
 
 - Path : `/foods/{docId}`
 - Method : `GET`
@@ -393,14 +393,12 @@
 ```json
 {
     "success": true,
-    "message": "Successfully fetching all foods data",
-    "data": 
-        {
-            "id": "air",
-            "satuan": "ml",
-            "nama": "air",
-            "kalori": 0
-        }
-      
+    "message": "Successfully fetching food data",
+    "data": {
+        "id": "air",
+        "nama": "air",
+        "kalori": 0,
+        "satuan": "ml"
+    }
 }
 ```
