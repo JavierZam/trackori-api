@@ -1,5 +1,5 @@
 const Joi = require('joi');
-const { registerHandler, loginHandler, verifyTokenHandler, logoutHandler, getUserByIdHandler, editUserDataHandler, editUserInfoHandler, resetPasswordHandler, addCalorieHistoryHandler, getCalorieHistoryByDateHandler, getAllCalorieHistoryHandler, editCalorieHistoryHandler, addAllCalorieHistoryHandler, getAllFoodsHistoryHandler, getFoodsHistoryByIdHandler } = require('./handler')
+const { registerHandler, loginHandler, verifyTokenHandler, logoutHandler, getUserByIdHandler, editUserDataHandler, editUserInfoHandler, resetPasswordHandler, addCalorieHistoryHandler, getCalorieHistoryByDateHandler, getAllCalorieHistoryHandler, editCalorieHistoryHandler, addAllCalorieHistoryHandler, getAllFoodsHistoryHandler, getFoodsHistoryByIdHandler, getAllFoodsCollectionHandler } = require('./handler')
 
 const routes = [
 
@@ -227,6 +227,13 @@ const routes = [
         path: '/users/{uid}/foods-history/{docId}',
         handler: getFoodsHistoryByIdHandler
     },
+
+    // Get all data in foods collection
+    {
+        method: 'GET',
+        path: '/foods',
+        handler: getAllFoodsCollectionHandler
+    }
 
 ];
 

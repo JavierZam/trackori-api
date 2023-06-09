@@ -169,7 +169,7 @@ const getCalorieHistoryByDateHandler = async (request, h) => {
                 date: formattedDate,
                 calories: docData.calories,
             };
-            
+
             return h.response({ success: true, message: 'Successfully fetching calorie history data by date', data: data }).code(200);
         } else {
             return h.response({ success: false, message: 'No data available for the provided date' }).code(404);
@@ -448,7 +448,7 @@ const getAllFoodsHistoryHandler = async (request, h) => {
 
         // Fetch all documents from the subcollection
         const snapshot = await getDocs(foodsHistoryCollection);
-        const data = snapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
+        const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
         return h.response({ success: true, message: 'Successfully fetching all foods history data', data: data }).code(200);
     } catch (error) {
@@ -471,12 +471,27 @@ const getFoodsHistoryByIdHandler = async (request, h) => {
         if (!foodDocSnapshot.exists()) {
             return h.response({ success: false, message: 'Food history not found' }).code(404);
         }
-        const data = {id: foodDocSnapshot.id, ...foodDocSnapshot.data()};
+        const data = { id: foodDocSnapshot.id, ...foodDocSnapshot.data() };
 
         return h.response({ success: true, message: 'Successfully fetching the food history data', data: data }).code(200);
     } catch (error) {
         console.error('Error getting food history:', error);
         return h.response({ success: false, message: 'Error getting food history' }).code(500);
+    }
+};
+
+const getAllFoodsCollectionHandler = async (request, h) => {
+    try {
+        const foodsCollection = collection(db, 'foods');
+
+        // Fetch all documents from the collection
+        const snapshot = await getDocs(foodsCollection);
+        const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+        return h.response({ success: true, message: 'Successfully fetching all foods data', data: data }).code(200);
+    } catch (error) {
+        console.error('Error getting foods:', error);
+        return h.response({ success: false, message: 'Error fetching foods data' }).code(500);
     }
 };
 
@@ -495,5 +510,6 @@ module.exports = {
     logoutHandler,
     addAllCalorieHistoryHandler,
     getAllFoodsHistoryHandler,
-    getFoodsHistoryByIdHandler
+    getFoodsHistoryByIdHandler,
+    getAllFoodsCollectionHandler
 };
