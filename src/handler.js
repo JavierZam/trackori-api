@@ -115,7 +115,7 @@ const loginHandler = async (request, h) => {
 // Create new document in calorie-history subcollection
 const addCalorieHistoryHandler = async (request, h) => {
     const { uid } = request.params;
-    const { calories } = request.payload;
+    const { name, calories } = request.payload;
 
     try {
         const userDoc = doc(db, 'users', uid);
@@ -123,13 +123,14 @@ const addCalorieHistoryHandler = async (request, h) => {
         const calorieHistoryDoc = doc(calorieHistoryCollection);
         const dateNow = Timestamp.now();
         await setDoc(calorieHistoryDoc, {
+            name,
             calories,
             date: dateNow
         });
         const dateObj = dateNow.toDate();
         // Format the date to 'DD-MM-YYYY'
         const formattedDate = `${dateObj.getDate().toString().padStart(2, '0')}-${(dateObj.getMonth() + 1).toString().padStart(2, '0')}-${dateObj.getFullYear()}`;
-        return h.response({ success: true, message: 'Successfully add new calorie history data', data: { calories: calories, date: formattedDate } }).code(201);
+        return h.response({ success: true, message: 'Successfully add new calorie history data', data: { name: name, calories: calories, date: formattedDate } }).code(201);
     } catch (error) {
         console.error('Error add calorie history data:', error);
         return h.response({ success: false, message: 'Error add calorie history data' }).code(500);
@@ -159,28 +160,24 @@ const getCalorieHistoryByDateHandler = async (request, h) => {
         );
 
         const querySnapshot = await getDocs(q);
-        const firstDoc = querySnapshot.docs[0];
-        if (firstDoc) {
-            const docData = firstDoc.data();
+        const data = querySnapshot.docs.map(doc => {
+            const docData = doc.data();
             const dateObj = docData.date.toDate();
             const formattedDate = `${dateObj.getDate().toString().padStart(2, '0')}-${(dateObj.getMonth() + 1).toString().padStart(2, '0')}-${dateObj.getFullYear()}`;
-            const data = {
-                id: firstDoc.id,
+            return {
+                id: doc.id,
                 date: formattedDate,
+                name: docData.name,
                 calories: docData.calories,
             };
+        });
 
-            return h.response({ success: true, message: 'Successfully fetching calorie history data by date', data: data }).code(200);
-        } else {
-            return h.response({ success: false, message: 'No data available for the provided date' }).code(404);
-        }
+        return h.response({ success: true, message: 'Successfully fetching calorie history data by date', data: data }).code(200);
     } catch (error) {
         console.error('Error getting calorie history:', error);
         return h.response({ success: false, message: 'Error getting calorie history' }).code(500);
     }
 };
-
-
 
 
 // Get all data from calorie-history subcollection
@@ -201,6 +198,7 @@ const getAllCalorieHistoryHandler = async (request, h) => {
             return {
                 id: doc.id,
                 date: formattedDate,
+                name: docData.name,
                 calories: docData.calories,
             };
         });
@@ -213,27 +211,39 @@ const getAllCalorieHistoryHandler = async (request, h) => {
 };
 
 // Edit data in calorie-history subcollection
+// Edit data in calorie-history subcollection
 const editCalorieHistoryHandler = async (request, h) => {
     const { uid, docId } = request.params;
-    const { calories } = request.payload;
+    const { calories, name } = request.payload;
+
+    // Build an object based on what's available in the request payload
+    const updateFields = {};
+    if (calories !== undefined) updateFields.calories = calories;
+    if (name !== undefined) updateFields.name = name;
+
+    // Check if there's any field to update
+    if (Object.keys(updateFields).length === 0) {
+        return h.response({ success: false, message: 'No fields to update' }).code(400);
+    }
 
     try {
         const userDoc = doc(db, 'users', uid);
         const calorieHistoryDoc = doc(userDoc, 'calorie-history', docId);
-        await updateDoc(calorieHistoryDoc, { calories });
+        await updateDoc(calorieHistoryDoc, updateFields);
 
         const updatedDoc = await getDoc(calorieHistoryDoc);
         if (!updatedDoc.exists()) {
-            // Handle error: document doesn't exist
             console.error('Document does not exist:', docId);
             return h.response({ success: false, message: 'Document does not exist' }).code(404);
         }
         const updatedData = updatedDoc.data();
         const dateObj = updatedData.date.toDate();
-        // Format the date to 'DD-MM-YYYY'
         const formattedDate = `${dateObj.getDate().toString().padStart(2, '0')}-${(dateObj.getMonth() + 1).toString().padStart(2, '0')}-${dateObj.getFullYear()}`;
 
-        return h.response({ success: true, message: 'Successfully updated calorie history', data: { calories: calories, date: formattedDate } }).code(200);
+        // Add the formatted date back to the updated data
+        updatedData.date = formattedDate;
+
+        return h.response({ success: true, message: 'Successfully updated calorie history', data: updatedData }).code(200);
     } catch (error) {
         console.error('Error updating calorie history:', error);
         return h.response({ success: false, message: 'Error updating calorie history' }).code(500);

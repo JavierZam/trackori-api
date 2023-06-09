@@ -58,16 +58,18 @@
 - Path : `/users/{uid}/calorie-history`
 - Method : `POST`
 - Request Body :
+  - name as `string` 
   - calories as `number`
 - Response :
 
 ```json
 {
-  "success": true,
-  "message": "Successfully add calorie history data",
-  "data": {
-      "calories": 100,
-      "date": "DD-MM-YYYY"
+    "success": true,
+    "message": "Successfully add new calorie history data",
+    "data": {
+        "name": "burger",
+        "calories": 300,
+        "date": "DD-MM-YYYY"
     }
 }
 ```
@@ -82,15 +84,28 @@
 
 ```json
 {
-  "success": true,
-  "message": "Succesfully fetching calories data by date",
-  "data": [
-      {
-          "id": "ruFG4GsQtc......",
-          "calories": 100,
-          "date": "DD-MM-YYYY"
-      }
-   ]
+    "success": true,
+    "message": "Successfully fetching calorie history data by date",
+    "data": [
+        {
+            "id": "yaVmUpLcVJ3AX1XoCwLg",
+            "date": "DD-MM-YYYY",
+            "name": "anggur",
+            "calories": 3
+        },
+        {
+            "id": "Pw0CSSstfUO7pb0OmLyh",
+            "date": "DD-MM-YYYY",
+            "name": "es_campur",
+            "calories": 250
+        },
+        {
+            "id": "Lf2xQ5j8G7X57HO8eIie",
+            "date": "DD-MM-YYYY",
+            "name": "burger",
+            "calories": 300
+        }
+    ]
 }
 ```
 
@@ -102,20 +117,28 @@
 
 ```json
 {
-  "success": true,
-  "message": "Succesfully fetching all calorie history data",
-  "data": [
-      {
-          "id": "ruFG4GsQtc......",
-          "calories": 100,
-          "date": "DD-MM-YYYY"
-      },
-      {
-          "id": "ruFGB4rtc......",
-          "calories": 200,
-          "date": "DD-MM-YYYY"
-      },
-   ]
+    "success": true,
+    "message": "Succesfully fetching all calorie history data",
+    "data": [
+        {
+            "id": "yaVmUpLcVJ3AX1XoCwLg",
+            "date": "DD-MM-YYYY",
+            "name": "anggur",
+            "calories": 3
+        },
+        {
+            "id": "Pw0CSSstfUO7pb0OmLyh",
+            "date": "DD-MM-YYYY",
+            "name": "es_campur",
+            "calories": 250
+        },
+        {
+            "id": "Lf2xQ5j8G7X57HO8eIie",
+            "date": "DD-MM-YYYY",
+            "name": "burger",
+            "calories": 300
+        }
+    ]
 }
 ```
 
@@ -124,17 +147,19 @@
 - Path : `/users/{uid}/calorie-history/{docId}`
 - Method : `PUT`
 - Request Body :
-  - calories as `number`
+  - name as `string` (optional)
+  - calories as `number` (optional)
 - Response :
 
 ```json
 {
-  "success": true,
-  "message": "Successfully updated calorie history",
-  "data": {
-          "calories": 300,
-          "date": "DD-MM-YYYY"
-      }
+    "success": true,
+    "message": "Successfully updated calorie history",
+    "data": {
+        "name": "burger",
+        "date": "DD-MM-YYYY",
+        "calories": 300
+    }
 }
 ```
 

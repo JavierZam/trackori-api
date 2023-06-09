@@ -55,7 +55,8 @@ const routes = [
         options: {
             validate: {
                 payload: Joi.object({
-                    calories: Joi.number().positive().required()
+                    calories: Joi.number().positive().required(),
+                    name:Joi.string().required()
                 }),
                 failAction: (request, h, err) => {
                     throw err;
@@ -96,7 +97,8 @@ const routes = [
         options: {
             validate: {
                 payload: Joi.object({
-                    calories: Joi.number().positive().required()
+                    calories: Joi.number().positive().allow(null).optional(),
+                    name: Joi.string().trim().allow('', null).optional()
                 }),
                 failAction: (request, h, err) => {
                     throw err;
