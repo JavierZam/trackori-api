@@ -298,28 +298,36 @@
     "message": "Successfully fetching all foods history data",
     "data": [
         {
-            "id": "Yw358lmHecym3QwVUlKQ",
-            "kalori": 0,
-            "nama": "air",
-            "image_url": "https://storage.googleapis.com/foods-image/5TcC8rY4L7VsSR2lWAZiVnDDSgy2/Yw358lmHecym3QwVUlKQ",
-            "satuan": "ml"
-        },
-        {
-            "id": "klB7T8zGQQl7RbdQRTSs"
-        },
-        {
-            "id": "uZBE9cL6hr7Wk8BO46DD",
-            "kalori": 125,
-            "satuan": "100 gram",
-            "nama": "cumi_goreng_tepung",
-            "image_url": "https://storage.googleapis.com/foods-image/5TcC8rY4L7VsSR2lWAZiVnDDSgy2/uZBE9cL6hr7Wk8BO46DD"
-        },
-        {
-            "id": "zcdXvuKwoOWAwSP4BSfW",
+            "id": "2ohBGCNRFDZBNxvlKbGO",
             "satuan": "butir",
-            "image_url": "https://storage.googleapis.com/foods-image/5TcC8rY4L7VsSR2lWAZiVnDDSgy2/zcdXvuKwoOWAwSP4BSfW",
+            "image_user": "https://storage.googleapis.com/foods-image/41OD8U1Tn0N3GC2VMkVH5HnFf2r2/tempe_goreng%20%284%29.jpg",
+            "image_db": "https://storage.googleapis.com/foods-image/foods/telur_balado%20(1).jpg",
             "kalori": 71,
             "nama": "telur_balado"
+        },
+        {
+            "id": "Apuwf7tGQqVvM7YTPK01",
+            "kalori": 0,
+            "nama": "air",
+            "image_user": "https://storage.googleapis.com/foods-image/41OD8U1Tn0N3GC2VMkVH5HnFf2r2/air_train%20%282%29.jpg",
+            "satuan": "ml",
+            "image_db": "https://storage.googleapis.com/foods-image/foods/air_train%20(6).jpg"
+        },
+        {
+            "id": "YRtXArfXoWX7rus59d12",
+            "satuan": "ml",
+            "image_db": "https://storage.googleapis.com/foods-image/foods/air_train%20(6).jpg",
+            "image_user": "https://storage.googleapis.com/foods-image/41OD8U1Tn0N3GC2VMkVH5HnFf2r2/air_train%20%283%29.jpg",
+            "nama": "air",
+            "kalori": 0
+        },
+        {
+            "id": "vWoAGAn6QokKxV415QR5",
+            "image_db": "https://storage.googleapis.com/foods-image/foods/telur_balado%20(1).jpg",
+            "satuan": "butir",
+            "image_user": "https://storage.googleapis.com/foods-image/41OD8U1Tn0N3GC2VMkVH5HnFf2r2/tempe_goreng%20%284%29.jpg",
+            "nama": "telur_balado",
+            "kalori": 71
         }
     ]
 }
@@ -336,11 +344,12 @@
     "success": true,
     "message": "Successfully fetching the food history data",
     "data": {
-        "id": "Yw358lmHecym3QwVUlKQ",
-        "satuan": "ml",
-        "image_url": "https://storage.googleapis.com/foods-image/5TcC8rY4L7VsSR2lWAZiVnDDSgy2/Yw358lmHecym3QwVUlKQ",
+        "id": "Apuwf7tGQqVvM7YTPK01",
+        "nama": "air",
         "kalori": 0,
-        "nama": "air"
+        "image_db": "https://storage.googleapis.com/foods-image/foods/air_train%20(6).jpg",
+        "satuan": "ml",
+        "image_user": "https://storage.googleapis.com/foods-image/41OD8U1Tn0N3GC2VMkVH5HnFf2r2/air_train%20%282%29.jpg"
     }
 }
 ```
@@ -359,23 +368,27 @@
         {
             "id": "air",
             "satuan": "ml",
+            "image_db": "https://storage.googleapis.com/foods-image/foods/air_train%20(6).jpg",
             "nama": "air",
             "kalori": 0
         },
         {
             "id": "anggur",
             "nama": "anggur",
+            "image_db": "https://storage.googleapis.com/foods-image/foods/anggur%20(1).jpg",
             "satuan": "butir",
             "kalori": 3
         },
         {
             "id": "apel",
             "satuan": "buah",
+            "image_db": "https://storage.googleapis.com/foods-image/foods/apel_train%20(3).jpg",
             "kalori": 72,
             "nama": "apel"
         },
         {
             "id": "ayam_goreng",
+            "image_db": "https://storage.googleapis.com/foods-image/foods/ayam_train%20(11)%20(1).jpg",
             "nama": "ayam goreng",
             "satuan": "100 gram",
             "kalori": 260
@@ -399,7 +412,8 @@
         "id": "air",
         "nama": "air",
         "kalori": 0,
-        "satuan": "ml"
+        "satuan": "ml",
+        "image_db": "https://storage.googleapis.com/foods-image/foods/air_train%20(6).jpg"
     }
 }
 ```

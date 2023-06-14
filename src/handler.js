@@ -20,7 +20,6 @@ const app = getApp();
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// test komen
 //User Register 
 const registerHandler = async (request, h) => {
     const { email, password, username, gender, age, weight, height, plan } = request.payload;
