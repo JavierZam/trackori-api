@@ -522,7 +522,8 @@ const getFoodsByIdHandler = async (request, h) => {
                 id: snapshot.id,
                 nama: snapshot.data().nama,
                 kalori: snapshot.data().kalori,
-                satuan: snapshot.data().satuan
+                satuan: snapshot.data().satuan,
+                image_db: snapshot.data().image_db
             };
             return h.response({ success: true, message: 'Successfully fetching food data', data: data }).code(200);
         } else {
