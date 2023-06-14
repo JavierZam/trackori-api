@@ -115,7 +115,7 @@ const loginHandler = async (request, h) => {
 // Create new document in calorie-history subcollection
 const addCalorieHistoryHandler = async (request, h) => {
     const { uid } = request.params;
-    const { name, calories } = request.payload;
+    const { name, calories, portion, unit } = request.payload;
 
     try {
         const userDoc = doc(db, 'users', uid);
@@ -125,12 +125,14 @@ const addCalorieHistoryHandler = async (request, h) => {
         await setDoc(calorieHistoryDoc, {
             name,
             calories,
+            portion,
+            unit,
             date: dateNow
         });
         const dateObj = dateNow.toDate();
         // Format the date to 'DD-MM-YYYY'
         const formattedDate = `${dateObj.getDate().toString().padStart(2, '0')}-${(dateObj.getMonth() + 1).toString().padStart(2, '0')}-${dateObj.getFullYear()}`;
-        return h.response({ success: true, message: 'Successfully add new calorie history data', data: { id: calorieHistoryDoc.id, name: name, calories: calories, date: formattedDate } }).code(201);
+        return h.response({ success: true, message: 'Successfully add new calorie history data', data: { id: calorieHistoryDoc.id, name: name, calories: calories, portion: portion, unit:unit, date: formattedDate } }).code(201);
     } catch (error) {
         console.error('Error add calorie history data:', error);
         return h.response({ success: false, message: 'Error add calorie history data' }).code(500);
@@ -170,6 +172,8 @@ const getCalorieHistoryByDateHandler = async (request, h) => {
                 date: formattedDate,
                 name: docData.name,
                 calories: docData.calories,
+                portion: docData.portion,
+                unit: docData.unit
             };
         });
 
@@ -201,6 +205,8 @@ const getAllCalorieHistoryHandler = async (request, h) => {
                 date: formattedDate,
                 name: docData.name,
                 calories: docData.calories,
+                portion: docData.portion,
+                unit: docData.unit
             };
         });
 
@@ -215,12 +221,14 @@ const getAllCalorieHistoryHandler = async (request, h) => {
 // Edit data in calorie-history subcollection
 const editCalorieHistoryHandler = async (request, h) => {
     const { uid, docId } = request.params;
-    const { calories, name } = request.payload;
+    const { calories, name, portion, unit } = request.payload;
 
     // Build an object based on what's available in the request payload
     const updateFields = {};
     if (calories !== undefined) updateFields.calories = calories;
     if (name !== undefined) updateFields.name = name;
+    if (portion !== undefined) updateFields.portion = portion;
+    if (unit !== undefined) updateFields.unit = unit;
 
     // Check if there's any field to update
     if (Object.keys(updateFields).length === 0) {

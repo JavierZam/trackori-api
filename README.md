@@ -60,6 +60,8 @@
 - Request Body :
   - name as `string` 
   - calories as `number`
+  - portion as `number`
+  - unit as `string`
 - Response :
 
 ```json
@@ -70,6 +72,8 @@
         "id": "Lf2xQ5j8G7X57HO8eIie",
         "name": "burger",
         "calories": 300,
+        "portion": 0.5,
+        "unit": "100 gram",
         "date": "DD-MM-YYYY"
     }
 }
@@ -92,19 +96,25 @@
             "id": "yaVmUpLcVJ3AX1XoCwLg",
             "date": "DD-MM-YYYY",
             "name": "anggur",
-            "calories": 3
+            "calories": 3,
+            "portion": 2,
+            "unit": "butir"
         },
         {
             "id": "Pw0CSSstfUO7pb0OmLyh",
             "date": "DD-MM-YYYY",
             "name": "es_campur",
-            "calories": 250
+            "calories": 250,
+            "portion": 1,
+            "unit": "porsi"
         },
         {
             "id": "Lf2xQ5j8G7X57HO8eIie",
             "date": "DD-MM-YYYY",
             "name": "burger",
-            "calories": 300
+            "calories": 300,
+            "portion": 1,
+            "unit": "buah"
         }
     ]
 }
@@ -125,19 +135,25 @@
             "id": "yaVmUpLcVJ3AX1XoCwLg",
             "date": "DD-MM-YYYY",
             "name": "anggur",
-            "calories": 3
+            "calories": 3,
+            "portion": 2,
+            "unit": "butir"
         },
         {
             "id": "Pw0CSSstfUO7pb0OmLyh",
             "date": "DD-MM-YYYY",
             "name": "es_campur",
-            "calories": 250
+            "calories": 250,
+            "portion": 1,
+            "unit": "porsi"
         },
         {
             "id": "Lf2xQ5j8G7X57HO8eIie",
             "date": "DD-MM-YYYY",
             "name": "burger",
-            "calories": 300
+            "calories": 300,
+            "portion": 1,
+            "unit": "buah"
         }
     ]
 }
@@ -150,6 +166,8 @@
 - Request Body :
   - name as `string` (optional)
   - calories as `number` (optional)
+  - portion as `number` (optional)
+  - unit as `string` (optional)
 - Response :
 
 ```json
@@ -157,9 +175,11 @@
     "success": true,
     "message": "Successfully updated calorie history",
     "data": {
-        "name": "burger",
-        "date": "DD-MM-YYYY",
-        "calories": 300
+        "portion": 3,
+        "calories": 250,
+        "unit": "buah",
+        "date": "14-06-2023",
+        "name": "burger"
     }
 }
 ```
