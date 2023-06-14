@@ -3,6 +3,24 @@
 # Trackori Authentication API
 
 ## Endpoint
+| Endpoint                                             | Method| Description                             |
+| ---------------------------------------------------- | ----- | --------------------------------------- |
+| `/register`                                          | `POST`| Register new user                       |
+| `/login`                                             | `POST`| User login                              |
+| `/users/{uid}/calorie-history`                       | `POST`| Create new data in calorie-history      |
+| `/users/{uid}/get-calorie-history?date={YYYY-MM-DD}` | `GET` | Get calorie-history data by date        |
+| `/users/{uid}/all-calorie-history`                   | `GET` | Get all calorie-history data            |
+| `/users/{uid}/calorie-history/{docId}`               | `PUT` | Edit calorie-history data               |
+| `/edit-info/{uid}`                                   | `PUT` | Edit user information                   |
+| `/protected`                                         | `GET` | Verify user token (protected resources) |
+| `/user/{uid}`                                        | `GET` | Get user info by uid                    |
+| `/edit-credential/{uid}`                             | `PUT` | Edit user credential (email or password)|
+| `/reset-password`                                    | `POST`| Reset user password                     |
+| `/logout`                                            | `POST`| User logout                             |
+| `/users/{uid}/all-foods-history`                     | `GET` | Get all data in foods-history           |
+| `/users/{uid}/foods-history/{docId}`                 | `GET` | Get data in foods-history by id         |
+| `/foods`                                             | `GET` | Get all data in foods collection        |
+| `/foods/{docId}`                                     | `GET` | Get data in foods collection by id      |
 
 ### Register User
 
