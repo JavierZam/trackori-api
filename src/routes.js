@@ -55,7 +55,7 @@ const routes = [
         options: {
             validate: {
                 payload: Joi.object({
-                    calories: Joi.number().positive().required(),
+                    calories: Joi.number().required(),
                     name:Joi.string().required(),
                     portion: Joi.number().positive().required(),
                     unit: Joi.string().required()
