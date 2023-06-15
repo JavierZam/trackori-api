@@ -1,4 +1,4 @@
-![User Api](https://github.com/C23-PS317/trackori-backend-api/blob/main/User%20Api.png?raw=true)
+![User Api](https://github.com/C23-PS317/trackori-backend-api/blob/main/userapiimg.png?raw=true)
 
 # Trackori Backend API
 
