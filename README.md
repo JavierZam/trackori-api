@@ -1,4 +1,4 @@
-![User Api](https://github.com/C23-PS317/trackori-authentication-api/assets/69651946/e532f953-410d-4a8d-a491-a0670e0bd7f5)
+![User Api](https://github.com/C23-PS317/trackori-backend-api/blob/main/userapiimg.png?raw=true)
 
 # Trackori Backend API
 
