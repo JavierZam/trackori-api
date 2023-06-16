@@ -1,6 +1,6 @@
-![User Api](https://github.com/C23-PS317/trackori-backend-api/blob/main/userapiimg.png?raw=true)
-
 # Trackori Backend API
+
+![User Api](https://github.com/C23-PS317/trackori-backend-api/blob/main/userapiimg.png?raw=true)
 
 ## Endpoint
 | Endpoint                                             | Method| Description                             |

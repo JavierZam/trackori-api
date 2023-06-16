@@ -1,5 +1,4 @@
 const Hapi = require('@hapi/hapi');
-
 const routes = require('./src/routes');
 
 const init = async () => {

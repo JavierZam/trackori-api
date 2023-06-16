@@ -31,7 +31,7 @@ const registerHandler = async (request, h) => {
     } else {
         BMR = (10 * weight) + (6.25 * height) - (5 * age) - 161;
     }
-    // assume for moderate physical activity
+    // assuming for moderate physical activity
     let dailyCalorieNeeds = BMR * 1.55;
     dailyCalorieNeeds = Math.round(dailyCalorieNeeds);
 
@@ -57,7 +57,7 @@ const registerHandler = async (request, h) => {
         const foodsCollection = collection(db, 'users', user.uid, 'foods-history');
         const newFoodDoc = doc(foodsCollection);
         await setDoc(newFoodDoc, {
-            // userID: user.uid
+            //
         });
 
         // Create 'calorie-history' subcollection inside 'users' document
@@ -73,7 +73,6 @@ const registerHandler = async (request, h) => {
         console.error({ success: false, message: 'Something went wrong:', error });
 
         if (error.code === 'auth/email-already-in-use') {
-            // Handle email already in use error
             return h.response({ success: false, message: 'That email is already taken' }).code(400);
         } else {
             throw error;
@@ -88,7 +87,6 @@ const loginHandler = async (request, h) => {
     try {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
-        // Get token 
         const idToken = await user.getIdToken();
 
         const userDoc = doc(db, 'users', user.uid);
@@ -132,13 +130,12 @@ const addCalorieHistoryHandler = async (request, h) => {
         const dateObj = dateNow.toDate();
         // Format the date to 'DD-MM-YYYY'
         const formattedDate = `${dateObj.getDate().toString().padStart(2, '0')}-${(dateObj.getMonth() + 1).toString().padStart(2, '0')}-${dateObj.getFullYear()}`;
-        return h.response({ success: true, message: 'Successfully add new calorie history data', data: { id: calorieHistoryDoc.id, name: name, calories: calories, portion: portion, unit:unit, date: formattedDate } }).code(201);
+        return h.response({ success: true, message: 'Successfully add new calorie history data', data: { id: calorieHistoryDoc.id, name: name, calories: calories, portion: portion, unit: unit, date: formattedDate } }).code(201);
     } catch (error) {
         console.error('Error add calorie history data:', error);
         return h.response({ success: false, message: 'Error add calorie history data' }).code(500);
     }
 };
-
 
 // Get data from calorie-history subcollection by date
 const getCalorieHistoryByDateHandler = async (request, h) => {
@@ -154,14 +151,12 @@ const getCalorieHistoryByDateHandler = async (request, h) => {
         const nextDate = new Date(inputDate);
         nextDate.setDate(inputDate.getDate() + 1);
 
-        // Get documents between inputDate and nextDate
         const q = query(
             calorieHistoryCollection,
             orderBy('date'),
             startAt(Timestamp.fromDate(inputDate)),
             endBefore(Timestamp.fromDate(nextDate))
         );
-
         const querySnapshot = await getDocs(q);
         const data = querySnapshot.docs.map(doc => {
             const docData = doc.data();
@@ -176,14 +171,12 @@ const getCalorieHistoryByDateHandler = async (request, h) => {
                 unit: docData.unit
             };
         });
-
         return h.response({ success: true, message: 'Successfully fetching calorie history data by date', data: data }).code(200);
     } catch (error) {
         console.error('Error getting calorie history:', error);
         return h.response({ success: false, message: 'Error getting calorie history' }).code(500);
     }
 };
-
 
 // Get all data from calorie-history subcollection
 const getAllCalorieHistoryHandler = async (request, h) => {
@@ -192,8 +185,6 @@ const getAllCalorieHistoryHandler = async (request, h) => {
     try {
         const userDoc = doc(db, 'users', uid);
         const calorieHistoryCollection = collection(userDoc, 'calorie-history');
-
-        // Show data from newest by date
         const q = query(calorieHistoryCollection, orderBy('date', 'desc'));
         const querySnapshot = await getDocs(q);
         const data = querySnapshot.docs.map(doc => {
@@ -209,7 +200,6 @@ const getAllCalorieHistoryHandler = async (request, h) => {
                 unit: docData.unit
             };
         });
-
         return h.response({ success: true, message: 'Succesfully fetching all calorie history data', data: data }).code(200);
     } catch (error) {
         console.error('Error getting calorie history:', error);
@@ -218,19 +208,16 @@ const getAllCalorieHistoryHandler = async (request, h) => {
 };
 
 // Edit data in calorie-history subcollection
-// Edit data in calorie-history subcollection
 const editCalorieHistoryHandler = async (request, h) => {
     const { uid, docId } = request.params;
     const { calories, name, portion, unit } = request.payload;
 
-    // Build an object based on what's available in the request payload
     const updateFields = {};
     if (calories !== undefined) updateFields.calories = calories;
     if (name !== undefined) updateFields.name = name;
     if (portion !== undefined) updateFields.portion = portion;
     if (unit !== undefined) updateFields.unit = unit;
 
-    // Check if there's any field to update
     if (Object.keys(updateFields).length === 0) {
         return h.response({ success: false, message: 'No fields to update' }).code(400);
     }
@@ -249,7 +236,6 @@ const editCalorieHistoryHandler = async (request, h) => {
         const dateObj = updatedData.date.toDate();
         const formattedDate = `${dateObj.getDate().toString().padStart(2, '0')}-${(dateObj.getMonth() + 1).toString().padStart(2, '0')}-${dateObj.getFullYear()}`;
 
-        // Add the formatted date back to the updated data
         updatedData.date = formattedDate;
 
         return h.response({ success: true, message: 'Successfully updated calorie history', data: updatedData }).code(200);
@@ -265,7 +251,6 @@ const editUserInfoHandler = async (request, h) => {
     const { username, age, weight, height, dailyCalorieNeeds, plan } = request.payload;
 
     try {
-        // Fetch user data from Firestore
         const userDoc = doc(db, 'users', uid);
         const docSnap = await getDoc(userDoc);
         if (!docSnap.exists()) {
@@ -282,7 +267,7 @@ const editUserInfoHandler = async (request, h) => {
         if (dailyCalorieNeeds) updateInfo.dailyCalorieNeeds = dailyCalorieNeeds;
         if (plan) updateInfo.plan = plan;
 
-        // delete plan if plan is null
+        // delete plan field if plan is null
         if (plan === null) {
             await updateDoc(userDoc, { plan: deleteField() });
             delete updateInfo.plan;
@@ -302,8 +287,6 @@ const editUserInfoHandler = async (request, h) => {
             dailyCalorieNeeds = Math.round(dailyCalorieNeeds);
             updateInfo.dailyCalorieNeeds = dailyCalorieNeeds;
         }
-
-        // Update user data
         await updateDoc(userDoc, updateInfo);
 
         return h.response({ success: true, message: 'Profile updated successfully', data: { uid: uid, username: updateInfo.username, gender: updateInfo.gender, age: updateInfo.age, weight: updateInfo.weight, height: updateInfo.height, dailyCalorieNeeds: updateInfo.dailyCalorieNeeds, plan: updateInfo.plan } }).code(200);
@@ -384,7 +367,7 @@ const editUserDataHandler = async (request, h) => {
 
         } else {
             // The signed-in user's UID does not match the provided UID
-            return h.response({ success: false, message: 'Signed-in user\'s UID does not match the provided UID' }).code(403);
+            return h.response({ success: false, message: 'UID does not match' }).code(403);
         }
     } catch (error) {
         console.error('Error updating profile:', error);
@@ -429,34 +412,6 @@ const logoutHandler = async (request, h) => {
     }
 };
 
-// Create new document for all user
-const addAllCalorieHistoryHandler = async (request, h) => {
-    const { calories } = request.payload;
-
-    try {
-        const usersCollection = collection(db, 'users');
-        const userSnapshot = await getDocs(usersCollection);
-
-        // Add new document to 'calorie-history' subcollection for each user
-        for (const userDoc of userSnapshot.docs) {
-            const uid = userDoc.id;
-            const userRef = doc(db, 'users', uid);
-            const calorieHistoryCollection = collection(userRef, 'calorie-history');
-            const calorieHistoryDoc = doc(calorieHistoryCollection);
-            const dateNow = Timestamp.now();
-            await setDoc(calorieHistoryDoc, {
-                calories,
-                date: dateNow
-            });
-        }
-
-        return h.response({ success: true, message: 'Successfully added calorie history data for all users', data: { calories: calories } }).code(201);
-    } catch (error) {
-        console.error('Error adding calorie history data:', error);
-        return h.response('Error adding calorie history data').code(500);
-    }
-};
-
 // Get all data in foods-history
 const getAllFoodsHistoryHandler = async (request, h) => {
     const { uid } = request.params;
@@ -465,7 +420,6 @@ const getAllFoodsHistoryHandler = async (request, h) => {
         const userDoc = doc(db, 'users', uid);
         const foodsHistoryCollection = collection(userDoc, 'foods-history');
 
-        // Fetch all documents from the subcollection
         const snapshot = await getDocs(foodsHistoryCollection);
         const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
@@ -484,8 +438,6 @@ const getFoodsHistoryByIdHandler = async (request, h) => {
         const userDoc = doc(db, 'users', uid);
         const foodsHistoryCollection = collection(userDoc, 'foods-history');
         const foodDoc = doc(foodsHistoryCollection, docId);
-
-        // Fetch the document
         const foodDocSnapshot = await getDoc(foodDoc);
         if (!foodDocSnapshot.exists()) {
             return h.response({ success: false, message: 'Food history not found' }).code(404);
@@ -503,8 +455,6 @@ const getFoodsHistoryByIdHandler = async (request, h) => {
 const getAllFoodsCollectionHandler = async (request, h) => {
     try {
         const foodsCollection = collection(db, 'foods');
-
-        // Fetch all documents from the collection
         const snapshot = await getDocs(foodsCollection);
         const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
@@ -521,8 +471,6 @@ const getFoodsByIdHandler = async (request, h) => {
 
     try {
         const foodDoc = doc(db, 'foods', docId);
-
-        // Fetch single document from the collection
         const snapshot = await getDoc(foodDoc);
         if (snapshot.exists()) {
             const data = {
@@ -536,7 +484,7 @@ const getFoodsByIdHandler = async (request, h) => {
         } else {
             return h.response({ success: false, message: 'Food not found' }).code(404);
         }
-        
+
     } catch (error) {
         console.error('Error getting food:', error);
         return h.response({ success: false, message: 'Error getting food' }).code(500);
@@ -556,7 +504,6 @@ module.exports = {
     editUserDataHandler,
     resetPasswordHandler,
     logoutHandler,
-    addAllCalorieHistoryHandler,
     getAllFoodsHistoryHandler,
     getFoodsHistoryByIdHandler,
     getAllFoodsCollectionHandler,

@@ -1,5 +1,5 @@
 const Joi = require('joi');
-const { registerHandler, loginHandler, verifyTokenHandler, logoutHandler, getUserByIdHandler, editUserDataHandler, editUserInfoHandler, resetPasswordHandler, addCalorieHistoryHandler, getCalorieHistoryByDateHandler, getAllCalorieHistoryHandler, editCalorieHistoryHandler, addAllCalorieHistoryHandler, getAllFoodsHistoryHandler, getFoodsHistoryByIdHandler, getAllFoodsCollectionHandler, getFoodsByIdHandler } = require('./handler')
+const { registerHandler, loginHandler, verifyTokenHandler, logoutHandler, getUserByIdHandler, editUserDataHandler, editUserInfoHandler, resetPasswordHandler, addCalorieHistoryHandler, getCalorieHistoryByDateHandler, getAllCalorieHistoryHandler, editCalorieHistoryHandler, getAllFoodsHistoryHandler, getFoodsHistoryByIdHandler, getAllFoodsCollectionHandler, getFoodsByIdHandler } = require('./handler')
 
 const routes = [
 
@@ -201,25 +201,6 @@ const routes = [
         method: 'POST',
         path: '/logout',
         handler: logoutHandler,
-    },
-
-    // // Create new document for all user
-    {
-        method: 'POST',
-        path: "/users/calorie-history",
-        handler: addAllCalorieHistoryHandler,
-        options: {
-            validate: {
-                payload: Joi.object({
-                    calories: Joi.number().positive().required(),
-                    portion: Joi.number().positive().required(),
-                    unit: Joi.number().positive().required()
-                }),
-                failAction: (request, h, err) => {
-                    throw err;
-                }
-            }
-        }
     },
 
     // Get all data in foods-history subcollection
