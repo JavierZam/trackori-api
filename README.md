@@ -35,6 +35,13 @@
   - weight as `number`
   - height as `number`
   - plan as `string`, defisit, bulking or null 
+  - password as `string`, min 8 characters
+  - username as `string`, min 3 characters
+  - gender as `string`, male or female
+  - age as `number`
+  - weight as `number`
+  - height as `number`
+  - plan as `string`, defisit, bulking or null 
 - Response :
 
 ```json
@@ -248,7 +255,9 @@
 ```
 
 ### Get user info by uid
+### Get user info by uid
 
+- Path : `/user/{uid}`
 - Path : `/user/{uid}`
 - Method : `GET`
 - Response :
@@ -263,8 +272,12 @@
         "username": "example",
         "gender": "male",
         "age": "21",
+        "gender": "male",
+        "age": "21",
         "weight": "60",
         "height": "165"
+        "dailyCalorieNeeds": 2000
+        "plan": "defisit", if plan exist
         "dailyCalorieNeeds": 2000
         "plan": "defisit", if plan exist
     }
@@ -272,10 +285,16 @@
 ```
 
 ### Edit User Credential, email or password
+### Edit User Credential, email or password
 
+- Path : `/edit-credential/{uid}`
 - Path : `/edit-credential/{uid}`
 - Method : `PUT`
 - Request Body :
+  - email as `string` (optional), new email
+  - password as `string` (optional), new password
+  - currentEmail as `string` (required), old email
+  - currentPassword as `string` (required), old password
   - email as `string` (optional), new email
   - password as `string` (optional), new password
   - currentEmail as `string` (required), old email
@@ -289,6 +308,7 @@
     "data": {
         "uid": "E6xujuerAYSBucr.............",
         "email": "newExample@email.com",
+        "email": "newExample@email.com",
     }
 }
 ```
@@ -298,6 +318,7 @@
 - Path : `/reset-password`
 - Method : `POST`
 - Request Body :
+  - email as `string`
   - email as `string`
 - Response :
 

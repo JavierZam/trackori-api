@@ -1,26 +1,28 @@
 const { initializeApp, getApps, getApp } = require('firebase/app');
 const { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateEmail, updatePassword, sendPasswordResetEmail } = require('firebase/auth');
 const { getFirestore, collection, doc, setDoc, getDoc, updateDoc, query, where, getDocs, Timestamp, deleteField, orderBy, startAt, endBefore } = require('firebase/firestore');
+const { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateEmail, updatePassword, sendPasswordResetEmail } = require('firebase/auth');
+const { getFirestore, collection, doc, setDoc, getDoc, updateDoc, query, where, getDocs, Timestamp, deleteField, orderBy, startAt, endBefore } = require('firebase/firestore');
 const Boom = require('@hapi/boom');
 const admin = require('firebase-admin');
 const firebaseConfig = require('./firebaseConfig');
 const { date } = require('joi');
 
 if (!getApps().length) {
-    initializeApp(firebaseConfig);
+  initializeApp(firebaseConfig);
 }
 
 if (!admin.apps.length) {
-    admin.initializeApp({
-        credential: admin.credential.applicationDefault()
-    });
+  admin.initializeApp({
+    credential: admin.credential.applicationDefault(),
+  });
 }
 
 const app = getApp();
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-//User Register 
+//User Register
 const registerHandler = async (request, h) => {
     const { email, password, username, gender, age, weight, height, plan } = request.payload;
 
@@ -68,9 +70,9 @@ const registerHandler = async (request, h) => {
             date: Timestamp.now()
         });
 
-        return h.response({ success: true, message: 'User registered successfully', data: { uid: user.uid, email: user.email, username: username } }).code(201);
-    } catch (error) {
-        console.error({ success: false, message: 'Something went wrong:', error });
+    return h.response({ success: true, message: 'User registered successfully', data: { uid: user.uid, email: user.email, username: username } }).code(201);
+  } catch (error) {
+    console.error({ success: false, message: 'Something went wrong:', error });
 
         if (error.code === 'auth/email-already-in-use') {
             return h.response({ success: false, message: 'That email is already taken' }).code(400);
@@ -82,32 +84,33 @@ const registerHandler = async (request, h) => {
 
 //User Login
 const loginHandler = async (request, h) => {
-    const { email, password } = request.payload;
+  const { email, password } = request.payload;
 
-    try {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-        const idToken = await user.getIdToken();
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+    // Get token
+    const idToken = await user.getIdToken();
 
-        const userDoc = doc(db, 'users', user.uid);
-        const docSnap = await getDoc(userDoc);
-        let username = null;
-        if (docSnap.exists()) {
-            username = docSnap.data().username;
-        }
-
-        return h.response({ success: true, message: 'Login Successfully', data: { uid: user.uid, email: user.email, username: username, accessToken: idToken } }).code(200);
-    } catch (error) {
-        console.error('Error logging in user:', error);
-
-        if (error.code === 'auth/user-not-found') {
-            return h.response({ success: false, message: 'User not found' }).code(400);
-        } else if (error.code === 'auth/wrong-password') {
-            return h.response({ success: false, message: 'Email and password does not match' }).code(401);
-        } else {
-            throw error;
-        }
+    const userDoc = doc(db, 'users', user.uid);
+    const docSnap = await getDoc(userDoc);
+    let username = null;
+    if (docSnap.exists()) {
+      username = docSnap.data().username;
     }
+
+    return h.response({ success: true, message: 'Login Successfully', data: { uid: user.uid, email: user.email, username: username, accessToken: idToken } }).code(200);
+  } catch (error) {
+    console.error('Error logging in user:', error);
+
+    if (error.code === 'auth/user-not-found') {
+      return h.response({ success: false, message: 'User not found' }).code(400);
+    } else if (error.code === 'auth/wrong-password') {
+      return h.response({ success: false, message: 'Email and password does not match' }).code(401);
+    } else {
+      throw error;
+    }
+  }
 };
 
 // Create new document in calorie-history subcollection
@@ -298,26 +301,26 @@ const editUserInfoHandler = async (request, h) => {
 
 //Verifying User Token
 const verifyTokenHandler = async (request, h) => {
-    const idToken = request.headers.authorization;
+  const idToken = request.headers.authorization;
 
-    try {
-        const decodedToken = await admin.auth().verifyIdToken(idToken);
-        console.log({ success: true, message: 'Token is valid' });
-        request.user = decodedToken;
-        return h.continue;
-    } catch (error) {
-        console.error({ success: false, message: 'Error verifying token', error });
-        throw Boom.unauthorized('Invalid token');
-    }
+  try {
+    const decodedToken = await admin.auth().verifyIdToken(idToken);
+    console.log({ success: true, message: 'Token is valid' });
+    request.user = decodedToken;
+    return h.continue;
+  } catch (error) {
+    console.error({ success: false, message: 'Error verifying token', error });
+    throw Boom.unauthorized('Invalid token');
+  }
 };
 
 //Get User Info By Id
 const getUserByIdHandler = async (request, h) => {
-    const { uid } = request.params;
+  const { uid } = request.params;
 
-    try {
-        const userDoc = doc(db, 'users', uid);
-        const docSnap = await getDoc(userDoc);
+  try {
+    const userDoc = doc(db, 'users', uid);
+    const docSnap = await getDoc(userDoc);
 
         if (docSnap.exists()) {
             const data = docSnap.data();
@@ -332,12 +335,13 @@ const getUserByIdHandler = async (request, h) => {
 };
 
 //Edit user credential, email or password
+//Edit user credential, email or password
 const editUserDataHandler = async (request, h) => {
     const { uid } = request.params;
     const { email, password, currentEmail, currentPassword } = request.payload;
 
-    try {
-        const { user } = await signInWithEmailAndPassword(auth, currentEmail, currentPassword);
+  try {
+    const { user } = await signInWithEmailAndPassword(auth, currentEmail, currentPassword);
 
         if (user.uid === uid) {
 
@@ -357,11 +361,11 @@ const editUserDataHandler = async (request, h) => {
             // const updateData = {};
             if (email) updateData.email = email;
 
-            await updateDoc(userDoc, updateData);
+      await updateDoc(userDoc, updateData);
 
-            // Update user data
-            if (email) await updateEmail(user, email);
-            if (password) await updatePassword(user, password);
+      // Update user data
+      if (email) await updateEmail(user, email);
+      if (password) await updatePassword(user, password);
 
             return h.response({ success: true, message: 'Profile updated successfully', data: { uid: uid, email: updateData.email } }).code(200);
 
@@ -384,13 +388,13 @@ const editUserDataHandler = async (request, h) => {
 
 //Reset user password using email 
 const resetPasswordHandler = async (request, h) => {
-    const { email } = request.payload;
-    try {
-        await sendPasswordResetEmail(auth, email);
-        console.log({ success: true, message: 'Password reset email sent to:', email });
-        return h.response({ success: true, message: 'We have sent email to reset your password', data: { email: email } }).code(200);
-    } catch (error) {
-        console.log({ success: false, message: 'Error sending password reset email:', error });
+  const { email } = request.payload;
+  try {
+    await sendPasswordResetEmail(auth, email);
+    console.log({ success: true, message: 'Password reset email sent to:', email });
+    return h.response({ success: true, message: 'We have sent email to reset your password', data: { email: email } }).code(200);
+  } catch (error) {
+    console.log({ success: false, message: 'Error sending password reset email:', error });
 
         if (error.code === 'auth/user-not-found') {
             return h.response({ success: false, message: 'User not found' }).code(404);
